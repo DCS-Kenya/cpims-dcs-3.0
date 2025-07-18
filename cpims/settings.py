@@ -29,8 +29,7 @@ SECRET_KEY = 'f1&qcqi&cfbt)yfz0hco)^4qlenw7(kd1j#i18jpkta(oj8)if'
 
 SITE_ID = 1
 
-# ALLOWED_HOSTS = ['childprotection.go.ke', 'www.childprotection.go.ke']
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['childprotection.go.ke', 'www.childprotection.go.ke', 'localhost']
 
 env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, '.env'))
@@ -42,7 +41,6 @@ cpims_db_port = env('CPIMS_PORT')
 cpims_db_user = env('CPIMS_DBUSER')
 
 DEBUG = env('CPIMS_DEBUG')
-
 
 # Application definition
 
@@ -69,6 +67,7 @@ INSTALLED_APPS = [
     'cpovc_ctip',
     'cpovc_afc',
     'cpovc_stat_inst',
+    'cpovc_pages',
     'notifications',
     'crispy_forms',
     'crispy_bootstrap3',
@@ -176,10 +175,10 @@ AUTH_USER_MODEL = 'cpovc_auth.AppUser'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'us2.smtp.mailhostbox.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'cpimskenya@gmail.com'
-EMAIL_HOST_PASSWORD = 'disbczrulkewfdry'
+EMAIL_HOST_USER = 'info@cpims.net'
+EMAIL_HOST_PASSWORD = 'aymdFCuaH3'
 
 DEFAULT_FROM_EMAIL = 'CPIMS Kenya <%s>' % EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
