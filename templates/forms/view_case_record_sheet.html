@@ -196,9 +196,14 @@
                         {% for data in init_data %}
                         <tr>
                         	<td width="3%"></td>
-                			<td width="22%"><strong>Child Names</strong></td><td width="25%">{{ data.first_name }} {{ data.surname }}</td>
-                			<td><strong>Date of Birth</strong></td><td>{{ data.date_of_birth }}</td>
+                			<td width="22%"><strong>CPIMS ID</strong></td><td width="25%">{{ data.id }}</td>
+                			<td></td><td></td>
                 		</tr>
+                        <tr>
+                            <td></td>
+                            <td><strong>Child Names</strong></td><td>{{ data.first_name }} {{ data.surname }}</td>
+                            <td><strong>Date of Birth</strong></td><td>{{ data.date_of_birth }}</td>
+                        </tr>
                 		<tr>
                 			<td></td>
                 			<td><strong>Sex</strong></td><td>{{ data.sex_id|gen_value:vals }}</td>
@@ -238,8 +243,9 @@
 						{% else %}
 	                    <tr>
 	                    	<td></td>
-                            <td colspan="4">
-                                <strong>No Siblings</strong>
+                            <td></td>
+                            <td colspan="3">
+                                <p>No Siblings Found</p>
                             </td>
                         </tr>
 						{% endif %}
@@ -489,7 +495,8 @@
 		            {% else %}
 	                    <tr>
 	                    	<td></td>
-	                        <td colspan="5">No referrals found</td>
+                            <td></td>
+	                        <td colspan="4">No referrals found</td>
 	                    </tr>
                     {% endif %}
         				<tr>

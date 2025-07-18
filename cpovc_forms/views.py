@@ -2183,6 +2183,8 @@ def view_case_record_sheet(request, id):
                                   'referral_grouping_id': str(ra.referral_grouping_id)
                                   })
         resultsets2.append(jsonData2)
+        # User audit trail
+        app_user = AppUser.objects.filter(pk=ovccr.created_by).first()
 
         return render(request,
                       'forms/view_case_record_sheet.html',
@@ -2201,7 +2203,8 @@ def view_case_record_sheet(request, id):
                        'perpetrators': perpetrators,
                        'ovcfam': ovcfam,
                        'resultsets': resultsets,
-                       'resultsets2': resultsets2
+                       'resultsets2': resultsets2,
+                       'app_user': app_user
                        })
     except Exception as e:
         msg = 'An error occured trying to view OVCCaseRecord - %s' % (str(e))
@@ -3547,12 +3550,13 @@ def case_events(request, id):
     form = OVC_CaseEventForm(
         initial={'case_id': case_id,
                  'reported_date': date_case_opened.strftime('%d-%b-%Y')})
+    crs = ovccr.first()
     return render(request, 'forms/case_events.html',
                   {
                       'form': form, 'vals': vals,
                       'resultsets': resultsets, 'afc': afc_intv,
                       'init_data': init_data, 'case_id': case_id,
-                      'summon_count': summon_count
+                      'summon_count': summon_count, 'crs': crs
                   })
 
 
