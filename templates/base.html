@@ -350,7 +350,7 @@
 		  	//<h3>This Version of Browser ('+ vid +') is not supported by CPIMS.</h3>
 		  	var msg = '';
 		  	{% if request.session.notice_board %}
-			msg += '<h3 class="text-primary">{{ request.session.notice_board }}</h3>';
+			msg += '<h3 class="text-primary">{{ request.session.notice_board|safe }}</h3>';
 			{% endif %}
 		    $('#top-navbar').html(msg);
 		  }

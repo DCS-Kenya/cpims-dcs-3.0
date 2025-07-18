@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block page_title %} CPIMS Pages {% endblock %}
+{% block page_title %} Pages - Home {% endblock %}
 
 {% block style_code %}
 
@@ -32,15 +32,63 @@
                     <a href="#" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
                     <a href="#" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
                 </div>                      
-                <h4 class="panel-title">Home &nbsp;</h4>
+                <h4 class="panel-title">Important dates &nbsp;</h4>
             </div>
             <!-- start panel body -->
             <div class="panel-body">
-                <a href="https://play.google.com/store/apps/details?id=com.poimapper.vurugumapper">
-                &nbsp; <i class="fa fa-download"></i> <span>Vurugu Mapper(Android)</span></a>
-                <br>
-                <img width="220px" src="/static/img/qr-vm.png">
-
+                <!-- begin timeline -->
+                {% if holiday %}
+                
+                <div class="alert alert-info fade in m-b-15">
+                    <strong>{{ fdate }}! </strong>
+                    {{ holiday }}
+                    <span class="close" data-dismiss="alert">&times;</span>
+                </div>
+                {% endif %}
+                <ul class="timeline">
+                    {% for date, holiday in dates.items %}
+                    <li>
+                        <!-- begin timeline-time -->
+                        <div class="timeline-time">
+                            <span class="date">{{ date }}</span>
+                            <span class="time">{% if fday == date %} Today {% else %} - {% endif %}</span>
+                        </div>
+                        <!-- end timeline-time -->
+                        <!-- begin timeline-icon -->
+                        <div class="timeline-icon">
+                            <a href="javascript:;"><i class="fa fa-paper-plane"></i></a>
+                        </div>
+                        <!-- end timeline-icon -->
+                        <!-- begin timeline-body -->
+                        <div class="timeline-body">
+                            <div class="timeline-header">
+                                <span class="userimage"><img src="/static/img/user-2.jpg" alt="" /></span>
+                                <span class="username"><a href="javascript:;">{{ holiday }}</a> <small></small></span>
+                                <span class="pull-right text-muted">days ago</span>
+                            </div>
+                            <div class="timeline-content">
+                                <p>{{ holiday }}</p>
+                            </div>
+                            <div class="timeline-footer">
+                                <i class="fa fa-comments fa-fw"></i> Calendar
+                            </div>
+                        </div>
+                        <!-- end timeline-body -->
+                    </li>
+                    {% endfor %}
+                    <li>
+                    <!-- begin timeline-icon -->
+                    <div class="timeline-icon">
+                        <a href="javascript:;"><i class="fa fa-spinner"></i></a>
+                    </div>
+                    <!-- end timeline-icon -->
+                    <!-- begin timeline-body -->
+                    <div class="timeline-body">
+                        Loading...
+                    </div>
+                    <!-- begin timeline-body -->
+                </li>
+                </ul>
             </div>
             <!-- end panel body -->
         </div>

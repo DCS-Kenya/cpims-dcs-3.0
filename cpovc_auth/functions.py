@@ -262,14 +262,15 @@ def get_holiday(request):
         todate = str(today.strftime("%d-%b"))
         evedate = str(kesho.strftime("%d-%b"))
         # Get the Holiday
-        fday = str(today.strftime("%a %d, %B %Y"))
+        fdate = str(today.strftime("%a %d, %B %Y"))
+        fday = fdate
         h_prefix = 'Today is'
         holiday = dates[todate] if todate in dates else None
         if not holiday:
             h_prefix += ' eve of'
             holiday = dates[evedate] if evedate in dates else None
         if holiday:
-            fday = '%s %s' % (h_prefix, holiday)
+            fday = '%s <a href="/pages/"><i class="fa fa-bell" aria-hidden="true"></i> </a>' % (fdate)
     except Exception as e:
         print('Error getting holiday - %s' % (e))
         return ''
