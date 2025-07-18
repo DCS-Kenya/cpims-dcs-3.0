@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %} CPIMS Pages - Mobile Apps {% endblock %}
+
+{% block style_code %}
+
+{% endblock %}
+
+{% block primary %}
+<!-- begin breadcrumb -->
+<ol class="breadcrumb pull-right">
+	<li><a href="#">Home</a></li>
+	<li class="active">Pages</li>
+</ol>
+<!-- end breadcrumb -->
+<!-- begin page-header -->
+<h1 class="page-header"> Pages <small>Mobile Apps</small></h1>
+<!-- end page-header -->
+<div id="messages" class="alert alert-danger fade in" style="display: none;" tabindex="1">
+    <span class="close" data-dismiss="alert">×</span>
+    <i class="fa fa-check fa-2x pull-left"></i>
+    <span class="invalid-form-message" id="invalid-form-message"></span>
+</div>
+<!-- begin row -->
+<div class="row">
+  <!-- begin col-12 -->
+    <div class="col-md-12">
+        <!-- begin panel -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    <a href="#" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                    <a href="#" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+                </div>                      
+                <h4 class="panel-title">Mobile Applications &nbsp;</h4>
+            </div>
+            <!-- start panel body -->
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Features</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td width="30%">
+                            <a href="https://play.google.com/store/apps/details?id=com.poimapper.vurugumapper">
+                            &nbsp; <i class="fa fa-download"></i> <span>Vurugu Mapper(Android)</span></a>
+                            <br>
+                            <img width="220px" src="/static/img/qr-vm.png">
+                        </td>
+                        <td>
+                        <ul>
+                            <li>Community reporting (By Child Protection Volunteers (CPV) and persons with authority)</li>
+                            <li>Online and offline reporting</li>
+                            <li>Only Android version available</li>
+                        </ul>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>CPIMS Mobile</td>
+                        <td>Coming soon</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- end panel body -->
+        </div>
+        <!-- end panel -->  
+    </div>
+    <!-- end col-12 -->
+</div>
+<!-- end row -->
+{% endblock %}
+
+{% block lazy_javascript_code %}
+
+{% endblock %}
