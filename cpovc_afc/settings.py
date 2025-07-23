@@ -17,6 +17,7 @@ FMS['13A'] = 'FGD Form'
 FMS['14A'] = 'Disability and Functioning Assessment'
 FMS['15A'] = 'Caregiver Feedback Form'
 FMS['16A'] = 'Child and Young Person Feedback Form'
+FMS['17A'] = 'Reunification Form'
 
 
 CTS = {}
@@ -29,4 +30,11 @@ CTS['KS'] = 'Kinship Care'
 CTS['CG'] = 'Guardianship'
 CTS['CK'] = 'Kafaalah'
 CTS['PS'] = 'Places of Safety & Temporal Shelter'
+# Reunification
+CTS['FR'] = 'Reunification'
+
+# Generic Forms
+GFORMS = {}
+GFORMS['17A'] = {'id': 'FMSI025F', 'tmpl': 'gforms/FMSI025F.html'}
+
 

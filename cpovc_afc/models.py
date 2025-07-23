@@ -84,7 +84,7 @@ class AFCForms(models.Model):
     form_id = models.UUIDField(
         primary_key=True, default=uuid.uuid1, editable=False)
     event = models.ForeignKey(AFCEvents, on_delete=models.CASCADE)
-    question_id = models.CharField(max_length=12)
+    question_id = models.CharField(max_length=40)
     item_value = models.CharField(max_length=10)
     item_detail = models.TextField(null=True, blank=True)
     timestamp_created = models.DateTimeField(default=timezone.now)

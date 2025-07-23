@@ -1,0 +1,747 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %} Alternative Care Forms - {{ form_name }}{% endblock %}
+
+{% load app_filters %}
+
+{% load crispy_forms_tags %}
+
+{% block style_code %}
+<link href="{% static 'plugins/parsley/src/parsley.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-datepicker/css/datepicker3.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-wizard/css/bwizard.min.css' %}" rel="stylesheet" />
+<link href="{% static 'css/si_forms.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block primary %}
+<!-- begin breadcrumb -->
+<ol class="breadcrumb pull-right">
+	<li><a href="#">Home</a></li>
+	<li class="active">Alternative Care - Forms </li>
+</ol>
+<!-- end breadcrumb -->
+<!-- begin page-header -->
+<h1 class="page-header"> Form {{ form_id }} - {{ form_name }} <small>Home</small></h1>
+<!-- end page-header -->
+{% if messages %}
+<div id="messages" class="alert alert-suc{{ form_name }}cess fade in">
+    <span class="close" data-dismiss="alert">×</span>
+    <i class="fa fa-check fa-2x pull-left"></i>
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.info %} class="{{ message.info }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+<!-- begin row -->
+<div class="row">
+   <div class="col-md-12">
+        <!-- begin panel -->
+        <div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+            <div class="myForm">
+            <div class="divHeader"><img src="{% static 'img/logo_gok.png' %}"><br/>MINISTRY OF LABOUR AND SOCIAL PROTECTION
+            <br/>STATE DEPARTMENT OF SOCIAL PROTECTION <br/>DIRECTORATE OF CHILDREN SERVICES <br/><br/>
+            <b>Alternative Care - FORM {{ form_id }} - {{ form_name }}</b></div>
+            <div class="cinvoice">
+                <div class="invoice-company">
+                    <span class="pull-right hidden-print">
+                    {% if edit_form == 0 %}
+                    <a href="{% url 'si_document' form_id=form_id %}" class="btn btn-sm btn-danger m-b-10"><i class="fa fa-download m-r-5"></i> Export as PDF</a>
+                    {% endif %}
+                    <button type="button" id="map-print" class="btn btn-sm btn-danger m-b-10" onclick="printChart()"><i class="fa fa-print"></i> Print Form</button>
+                    <a href="{{ BACK_URL }}" class="btn btn-sm btn-success m-b-10"><i class="fa fa-mail-reply-all m-r-5"></i> Back to Care details</a>
+                    </span>
+                    Case No: {{ case_num }}
+                </div>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" method="POST" id="new-form-31F" action="." data-parsley-validate="true">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_id" value="{{ form_id }}">
+                    <input type="hidden" name="case_id" value="{{ case.case_id }}">
+                    <input type="hidden" name="person_id" value="{{ case.person.id }}">
+                    <input type="hidden" name="care_id" value="{{ case.care_id }}">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Child Names</label>
+                        <div class="col-md-3">
+                            {{ case.person.first_name }} {{ case.person.surname }}
+                        </div>
+                        <label class="col-md-2 control-label">Sex</label>
+                        <div class="col-md-3">{{ case.person.sex_id|gen_value:vals }}</div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"> Date of Birth</label>
+                        <div class="col-md-3">
+                            {{ case.person.date_of_birth }}
+                        </div>
+                        <label class="col-md-2 control-label">Age</label>
+                        <div class="col-md-3">{{ case.person.age }}</div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <div id="wizard">
+                        <ol>
+                            <li>
+                                A. HEALTH AND DEVELOPMENT
+                                <small>Child Health and Development.</small>
+                            </li>
+                            <li>
+                                B.&nbsp;EDUCATION
+                                <small>Education details.</small>
+                            </li>
+                            <li>
+                                C. PSYCHOSOCIAL AND EMOTIONAL WELLBEING
+                                <small>Psychosocial and emotional wellbeing.</small>
+                            </li>
+                            <li>
+                                CHILD PERSPECTIVE ON REINTEGRATION / PLACEMENT
+                                <small>Child Perspective on reintegration</small>
+                            </li>
+                            <li>
+                                ASSESSMENT CONCLUSION AND ACTIONS
+                                <small>Assessment conclusion and actions to address child's needs</small>
+                            </li>                            
+                        </ol>
+                        <!-- begin wizard step-1 -->
+                        <div>
+                            <fieldset>
+                            <legend class="pull-left width-full">A. HEALTH AND DEVELOPMENT</legend>
+
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Is the child growing appropriately for his/her age? For example, is he/she walking, speaking, developing self-help skills? (Describe physical skills and needs, intellectual skills and needs, social skills and needs.) <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B1A }}
+                                        <span id="qf1B1A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B1B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Any history of medical issues / hospitalization? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B2A }}
+                                        <span id="qf1B2A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B2B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Frequency of hospitalization? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B2C }}
+                                        <span id="qf1B2C_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Any current health conditions? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B3A }}
+                                        <span id="qf1B3A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B3B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Any chronic health conditions <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                       {{ form.qf1B4A }}
+                                        <span id="qf1B4A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B4B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Currently on any medication? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B5A }}
+                                        <span id="qf1B5A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B5B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Immunization status <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B6A }}
+                                        <span id="qf1B6A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B6B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Any allergy <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B7A }}
+                                        <span id="qf1B7A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B7B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Feeding routine and special needs?</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B8 }}
+                                    <div class="col-md-1"></div>
+                                </div>                                
+                            </fieldset>
+                        </div>
+                        <!-- end wizard step-1 -->
+                        <!-- begin wizard step-2 -->
+                        <div>
+                            <fieldset>
+                            <legend class="pull-left width-full">B. EDUCATION</legend>
+
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Previously attended any School? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-3">
+                                        {{ form.qf1B9A }}
+                                        <span id="qf1B9A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-5">{{ form.qf1B9B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">School Level <span class="asteriskField">*</span></label>
+                                    <div class="col-md-3">
+                                        {{ form.school_level }}
+                                    </div>
+                                    <label class="col-md-2 control-label"></label>
+                                    <div class="col-md-4"></div>
+                                </div>
+                                <div class="form-group" id="school_details_div">
+                                    <label class="col-md-3 control-label">School ID <span class="asteriskField">*</span></label>
+                                    <div class="col-md-1">{{ form.school }}</div>
+                                    <div class="col-md-2">(System Generated - Start typing school name then select from drop down)</div>
+                                    <label class="col-md-1 control-label">School Name <span class="asteriskField">*</span></label>
+                                    <div class="col-md-4">{{ form.school_name }}</div>
+                                </div>
+                                <div class="form-group" id="class_details_div">
+                                    <label class="col-md-3 control-label">Class Level <span class="asteriskField">*</span></label>
+                                    <div class="col-md-3">
+                                        {{ form.school_class }}
+                                    </div>
+                                    <label class="col-md-1 control-label">Admission Type <span class="asteriskField">*</span></label>
+                                    <div class="col-md-4">{{ form.admission_type }}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Access to scholastic materials <span class="asteriskField">*</span></label>
+                                    <div class="col-md-3">
+                                        {{ form.qf1B10 }}
+                                        <span id="qf1B10_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">School attendance <span class="asteriskField">*</span></label>
+                                    <div class="col-md-3">
+                                        {{ form.qf1B11 }}
+                                        <span id="qf1B11_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Academic perfomance <span class="asteriskField">*</span></label>
+                                    <div class="col-md-8">
+                                        {{ form.qf1B12 }}
+                                        <span id="qf1B12_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Extracurricular activity and behavior<br><small>(Hint: Contact school directly.)</small></label>
+                                    <div class="col-md-8">{{ form.qf1B13 }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <!-- end wizard step-2 -->
+                        <!-- begin wizard step-3 -->
+                        <div>
+                            <fieldset>
+                            <legend class="pull-left width-full">C. PSYCHOSOCIAL AND EMOTIONAL WELLBEING</legend>
+
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Who are the child's friends?</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B14A }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">What kind of things do they do together</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B14B }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">How often do they interact?</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B14C }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">What are the childs's views on these peer friendships?</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B15 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">What is the quality of these friendships?</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B16 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Are the perceived friends much older, younger or same age?</label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B17 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Level of attachment between the child and current caregiver: <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B18A }}
+                                        <span id="qf1B18A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B18B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Level of attachment to previous primary caregiver <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B19A }}
+                                        <span id="qf1B19A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-4">{{ form.qf1B19B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-5 control-label">Does the child exhibit any of the following? (tick all that apply) </label>
+                                    <div class="col-md-6">
+                                        {{ form.qf1B20 }}
+                                        <span id="qf1B20_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <label class="col-md-1 control-label">Daily Routine</label>
+                                    <div class="col-md-4">
+                                        {{ form.qf1B21 }}
+                                    </div>
+                                    <label class="col-md-2 control-label">Degree of independence <small> (i.e., what can the child do for himself/herself and what help does the child need?)</small> <span class="asteriskField">*</span></label>
+                                    <div class="col-md-4">
+                                        {{ form.qf1B22 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-1 control-label">Likes</label>
+                                    <div class="col-md-4">
+                                        {{ form.qf1B23 }}
+                                    </div>
+                                    <label class="col-md-2 control-label">Dislikes</label>
+                                    <div class="col-md-4">
+                                        {{ form.qf1B24 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-1 control-label">Fears</label>
+                                    <div class="col-md-4">
+                                        {{ form.qf1B25 }}
+                                    </div>
+                                    <label class="col-md-2 control-label">Skills and strength</label>
+                                    <div class="col-md-4">
+                                        {{ form.qf1B26 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <!-- end wizard step-3 -->
+                        <!-- begin wizard step-4 -->
+                        <div>
+                            <fieldset>
+                            <legend class="pull-left width-full"> CHILD PERSPECTIVE ON REINTEGRATION / PLACEMENT</legend>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Does the child express a preference for reunification/placement? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B27A }}
+                                        <span id="qf1B27A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Does the child express concerns about reunification/placement? <span class="asteriskField">*</span></label>
+                                    <div class="col-md-2">
+                                        {{ form.qf1B28A }}
+                                        <span id="qf1B28A_rdo_error"></span>
+                                    </div>
+                                    <div class="col-md-5">{{ form.qf1B28B }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <!-- end wizard step-4 -->
+                        <!-- begin wizard step-5 -->
+                        <div>
+                            <fieldset>
+                            <legend class="pull-left width-full"> ASSESSMENT CONCLUSION AND ACTIONS TO ADDRESS CHILD’S NEEDS</legend>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Strengths Identified</label>
+                                    <div class="col-md-8">
+                                        {{ form.qf1B30 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Needs or concerns</label>
+                                    <div class="col-md-8">
+                                        {{ form.qf1B31 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Additional observations</label>
+                                    <div class="col-md-8">
+                                        {{ form.qf1B32 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Things to be achieved</label>
+                                    <div class="col-md-8">
+                                        {{ form.qf1B33 }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <hr>                    
+                    <div class="form-group">
+                        <label class="col-md-5 control-label">Date of Assessment <span class="asteriskField">*</span></label>
+                        <div class="col-md-2">
+                            {{ form.event_date }}
+                        </div>
+                        <div class="col-md-5"></div>
+                    </div>
+                    
+                    
+                    <div class="form-group">
+                        <label class="col-md-5 control-label"></label>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-success">Submit Form {{ form_code }} details</button>
+                            <a href="{{ BACK_URL }}">
+                                <button type="button" class="btn btn-default">Cancel</button>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                {% if edit_form > 0 %}
+
+                <div class="row">
+                    <!-- begin col-12 -->
+                    <div class="col-md-12">
+                        <!-- begin panel -->
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <div class="panel-heading-btn">
+                                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                                </div>                          
+                                <h4 class="panel-title"><b>Past Events</b></h4>                    
+                            </div>
+
+                            <div class="panel-body">
+                                <div  class="panel panel-inverse">
+                                    <div id="case-events"  class="table-responsive">
+                                        <table id="tableData" class="table table-striped table-bordered">
+                                            <thead>
+                                                <tr> 
+                                                    <th>#</th>                                 
+                                                    <th>Event Date</th>                
+                                                    <th>Officer</th> 
+                                                    <th width="25%">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if case.events %}
+                                                {% for vacancy in case.events %}
+                                                <tr id="si_row-{{ vacancy.pk }}"> 
+                                                    <td>{{ forloop.counter }}</td>                                 
+                                                    <td>{{ vacancy.event_date }}</td>
+                                                    <td>N/A</td>        
+                                                    <td>
+                                                        <a href="{% url EDIT_URL form_id=form_id id=case.person.id ev_id=vacancy.pk|stringformat:'s' %}">
+                                                            <button type="button" class="btn btn-primary"> <i class="fa fa-pencil"></i> View / Edit Details</button>
+                                                        </a>
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="si-{{ vacancy.pk }}" role="dialog">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div style="background-color:#d9edf7" class="modal-header">
+                                                                        <button type="button" class="close " data-dismiss="modal">&times;</button>
+                                                                        <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Delete {{ form_name }} - {{ vacancy.event_date }}</strong></h4>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <p>Are you sure you want to delete this {{ form_name }} dated {{ vacancy.event_date }} ? </p>
+                                                                            <br>
+                                                                            <p>Click Yes to proceed to delete or Close to Cancel.</p>
+                                                                            <hr>
+                                                                            <a><button onclick="deleteEvent('{{ form_id }}', '{{ vacancy.pk }}')" type="button" class="btn btn-danger" data-dismiss="modal">Yes</button></a>
+                                                                            <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <a href="#si-{{ vacancy.pk }}" class="btn btn-danger" data-toggle="modal">
+                                                            <i class="fa fa-trash"></i> Delete
+                                                        </a>                                                        
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="6">No previous events available</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <br><br>                           
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- end panel -->
+                    </div>
+                    <!-- end col-12 -->
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- end panel -->
+    </div>
+</div>   
+</div>
+<!-- end row -->
+<!-- Modal -->
+<div  class="modal fade" id="successMsg" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="background-color: #8f9191">
+            <div style="background-color: #d9edf7" class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Successful Deletion of Event</strong></h4>
+            </div>
+            <div class="modal-body">
+            <p>Deleted successfully!</p>
+            <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="errorMsg" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div style="background-color: #ff9966" class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Deletion NOT completed.</strong></h4>
+            </div>
+            <div class="modal-body">
+            <p>This item can not be deleted. <span id="msg_id"></span></p>
+            <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lazy_javascript_code %}
+
+
+<script src="{% static 'plugins/bootstrap-wizard/js/bwizard.js' %}"></script>
+<script>
+//Class levels
+{% for key, values in levels.items %}
+    var {{ key }} = {{ values|safe }};
+{% endfor %}
+
+// Delete Django Ajax Call
+function deleteEvent(form_id, event_id) {
+    var csrftoken = $.cookie('csrftoken');
+    $.ajax({
+        type: 'POST',
+        url: "{% url DELETE_URL %}",
+        
+        data: {'form_id': form_id, 'event_id': event_id,
+               'csrfmiddlewaretoken': csrftoken },
+        dataType: 'json',
+        
+        success: function (data) {
+            if (data.deleted == 1) {
+                console.log(data);
+              $("#tableData #si_row-" + event_id).remove();
+              $("#successMsg").modal('show');
+            }
+            if(data.deleted == 0){
+                console.log(data.days)
+                $("#msg_id").html(data.message);
+                $("#errorMsg").modal('show');
+    
+            }
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
+
+$(document).ready(function() {
+    {% if allow_edit == 0 and 'U' not in all_perms %}
+    $("#new-form-31F :input").prop("disabled", true);
+    {% endif %}
+    $('#event_date, .event_date').datepicker({ endDate: '0y', format: 'dd-M-yyyy' });
+    $("#wizard").bwizard({ validating: function (e, ui) { }            
+    });
+
+    //School query
+    var s_level = $('#school_level').val();
+    $( "#school_name" ).autocomplete({
+        source: function( request, response ) {
+        $.ajax({
+          url: "{% url 'ovc_search' %}",
+          dataType: "json",
+          data: {q: request.term, id: 2, level: $('#school_level').val()},
+          success: function( data ) {
+            response( data );
+          }
+        });
+      },
+      minLength: 4,
+      select: function( event, ui ) {
+         $('#school_name').val(ui.item.name);
+         $('#school').val(ui.item.id);
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
+    });
+
+    // Handle school levels
+    var sval = $('#school_level').val();
+    handle_education(sval);
+    //handle_levels(sval);
+    $('#school_level').change(function(){
+        handle_education(this.value);
+        //handle_levels(this.value);
+    });
+    $('#school_class').val('{{ sch_class }}');
+
+});
+
+
+function handle_levels(person_type){
+    var default_txt = "<option value=''>Select Class</option>";
+    if (person_type != ''){
+        var person = ((eval(person_type)).length == 1) ? '' : default_txt;
+    }else{
+        var person = "<option value=''>Select Class</option>";
+    }
+    $('#school_class').html(person);
+    if (person_type != ''){
+        eval(person_type).forEach(function(tts) {
+            var tts_attribs = tts.split(",");
+            $('#school_class')
+                .append($("<option></option>")
+                .attr("value", tts_attribs[0])
+                .text(tts_attribs[1]));
+        });
+    }else{
+         $('#school_class').append('<option></option>'); 
+    }
+}
+
+
+function handle_education(hlevel){
+    if ((hlevel == 'SLNS') || (hlevel == '')) {
+        $('#school_details_div').hide();
+        $('#class_details_div').hide();
+        $('#school_name').attr("data-parsley-required", "false");
+        $('#school_id').attr("data-parsley-required", "false");
+        $('#school_class').attr("data-parsley-required", "false");
+        $('#admission_type').attr("data-parsley-required", "false");
+    }else{
+        $('#school_details_div').show();
+        $('#class_details_div').show();
+        $('#school_name').attr("data-parsley-required", "true");
+        $('#school_id').attr("data-parsley-required", "true");
+        $('#school_class').attr("data-parsley-required", "true");
+        $('#admission_type').attr("data-parsley-required", "true");
+    }
+
+}
+function printChart() {
+      //Print Chart
+      var mapContainer;
+      var body               = $('body');
+      mapContainer       = $('div.myForm');
+      if (mapContainer.length == 0){
+          mapContainer = $('div.myForm');
+      }
+      var mapContainerParent = mapContainer.parent();
+      var printContainer     = $('<div>');
+      $(':input').removeAttr('placeholder');
+
+      printContainer
+        .addClass('print-container')
+        .css('width', '100%')
+        .css('height', '800px')
+        .css('-webkit-print-color-adjust','exact')
+        .height(mapContainer.height())
+        .append(mapContainer)
+        .prependTo(body);
+
+      var content = body
+        .children()
+        .not('script')
+        .not(printContainer)
+        .detach();
+      
+      // Patch for some Bootstrap 3.3.x `@media print` styles. :|
+      var patchedStyle = $('<style>')
+        .attr('media', 'print')
+        .text('img { max-width: auto !important; }' +
+              'a[href]:after { content: ""; }')
+        .appendTo('head');
+
+      window.print();
+
+      body.prepend(content);
+      mapContainerParent.prepend(mapContainer);
+
+      printContainer.remove();
+      patchedStyle.remove();
+      $('#print_title').remove();
+}
+</script>
+{% endblock %}

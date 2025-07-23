@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'cpovc_ctip',
     'cpovc_afc',
     'cpovc_stat_inst',
+    'cpovc_institutions',
     'cpovc_pages',
     'notifications',
     'crispy_forms',

@@ -3,12 +3,15 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from cpovc_main.functions import convert_date
-from .models import AFCMain, AFCForms, AFCEvents, AFCInfo
 from cpovc_main.models import SetupGeography
 from cpovc_ovc.models import OVCEducation
 from cpovc_main.functions import get_dict
 
 from cpovc_forms.models import OVCCaseRecord
+from cpovc_api.functions import form_handler, FormsObj
+
+from .models import AFCMain, AFCForms, AFCEvents, AFCInfo
+from .settings import GFORMS
 
 
 def handle_alt_care(request, action, params={}):
@@ -82,12 +85,17 @@ def save_alt_care(request, params):
         case_id = params['case_id']
         person_id = params['person_id']
         case_date = request.POST.get('case_date')
-        care_type = request.POST.get('care_option')
+        care_option = request.POST.get('care_option')
         care_sub_type = request.POST.get('care_sub_option', None)
         event_date = convert_date(case_date)
+        # Handle Re-unification
+        care_type = request.POST.get('care_type')
+        print('Re-unification', care_type)
+        if care_type == 'ICFR':
+            care_option = care_type
         # save details
         obj = save_care(
-            request, case_id, event_date, care_type, person_id)
+            request, case_id, event_date, care_option, person_id)
         if care_sub_type:
             obj.care_sub_type = care_sub_type
             obj.save()
@@ -132,6 +140,9 @@ def save_altcare_form(request, form_id, ev_id=0):
         print('Last ID', form_id, care_id, person_id, lid)
         # Default to existing care
         response = care_id
+        # Handle Re-unification
+        ac_care_id = request.POST.get('care_type')
+        print('Re-unification', ac_care_id)
         if case_id == care_id:
             print('Form Zero has not been filled')
             print('Request', request.POST)
@@ -227,20 +238,31 @@ def get_last_form(request, form_id, care_id, person_id):
 def save_form_data(request, form_id, event_id):
     """Method to save Main forms data."""
     try:
-        print('event id', event_id)
+        print('event and form id', event_id, form_id)
         form_pref = 'qf%s' % (form_id)
-        all_itms = extract_params(request, form_pref)
-        for itms in all_itms:
-            for itm in all_itms[itms]:
-                # print('itm', itms, itm)
-                # itdm = 'QTXT' if itms.endswith('_txt') else itm
-                # itdl = itm if itms.endswith('_txt') else None
-                itdm, itdl = get_field_type(itm, itms)
-                # print('itm after', itms, itm, itdl)
-                obj, created = AFCForms.objects.update_or_create(
-                    event_id=event_id, question_id=itms,
-                    defaults={'item_value': itdm, 'item_detail': itdl},
-                )
+        print('form data', form_pref, request.POST)
+        if form_id in ['17A']:
+            print('Use the Forms API')
+            form_guid = GFORMS[form_id]['id']
+            FormObj = FormsObj()
+            FormObj.main = AFCMain
+            FormObj.forms = AFCForms
+            FormObj.event = AFCEvents
+            form_handler(request, FormObj, form_id, form_guid)
+        else:
+            all_itms = extract_params(request, form_pref)
+            print('Final params', all_itms)
+            for itms in all_itms:
+                for itm in all_itms[itms]:
+                    # print('itm', itms, itm)
+                    # itdm = 'QTXT' if itms.endswith('_txt') else itm
+                    # itdl = itm if itms.endswith('_txt') else None
+                    itdm, itdl = get_field_type(itm, itms)
+                    # print('itm after', itms, itm, itdl)
+                    obj, created = AFCForms.objects.update_or_create(
+                        event_id=event_id, question_id=itms,
+                        defaults={'item_value': itdm, 'item_detail': itdl},
+                    )
     except Exception as e:
         print('Error saving AFC %s' % (str(e)))
     else:

@@ -21,8 +21,8 @@
 {% block primary %}
 <!-- begin breadcrumb -->
 <ol class="breadcrumb pull-right">
-	<li><a href="#">Home</a></li>
-	<li class="active">Alternative Care</li>
+    <li><a href="#">Home</a></li>
+    <li class="active">Alternative Care</li>
 </ol>
 <!-- end breadcrumb -->
 <!-- begin page-header -->
@@ -239,7 +239,7 @@
                         </tr>
                         <tr>
                             <td class="field">DoB</td>
-                            <td>{{ case.person.date_of_birth }} (Actual / Estimated)</td>
+                            <td>{{ case.person.date_of_birth }} </td>
                         </tr>
                         <tr class="highlight" bgcolor="#f2f3f4">
                             <td class="field">Case Data</td>
@@ -252,20 +252,33 @@
                                         <label class="col-md-3 control-label"> Case categories</label>
                                         <div class="col-md-4">
                                             {% for ct in categories %}
-                                                {{ forloop.counter }}. {{ ct.case_category|gen_value:vals }}<br>
+                                                <br>{{ forloop.counter }}. {{ ct.case_category|gen_value:vals }}<br>
                                             {% endfor %}
                                         </div>
                                         <div class="col-md-5"></div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-md-3 control-label"> Care Option <span class="asteriskField">*</span></label>
+                                    <label class="col-md-3 control-label">Care Type</label>
+                                    <div class="col-md-9">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="care_type" value="ICLC" checked />
+                                            Alternative Care
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="care_type" value="ICFR" />
+                                            Re-unification
+                                        </label>
+                                    </div>
+                                </div>
+                                    <div class="form-group" id="div_care_option">
+                                        <label class="col-md-3 control-label"> Alternative Care <span class="asteriskField">*</span></label>
                                         <div class="col-md-4">
                                             {{ form.care_option }}
                                         </div>
                                         <div class="col-md-5"></div>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"> Care Sub-option</label>
+                                    <div class="form-group" id="div_care_sub_option">
+                                        <label class="col-md-3 control-label"> Alternative Care Sub-option</label>
                                         <div class="col-md-4">
                                             {{ form.care_sub_option }}
                                         </div>
@@ -303,10 +316,6 @@
 {% endblock %}
 
 {% block lazy_javascript_code %}
-<script src="{% static 'plugins/datatables/js/jquery.dataTables.js' %}"></script>
-<script src="{% static 'plugins/datatables/js/dataTables.bootstrap.min.js' %}"></script>
-<script src="{% static 'plugins/datatables/js/moment.min.js' %}"></script>
-<script src="{% static 'plugins/datatables/js/datetime-moment.js' %}"></script>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -322,24 +331,27 @@
             }
             
         });
-        var aval = $("input[name='is_trafficking']:checked").val();
-        handle_amp(aval);
+
+        // AC or Re-unification
+        var acr = $("input[name='care_type']:checked").val();
+        handle_acr(acr);
 
         // Purpose means logic
-        $('input[type=radio][name=is_trafficking]').change(function() {
-            handle_amp(this.value);
+        $('input[type=radio][name=care_type]').change(function() {
+            handle_acr(this.value);
         });
 
-        function handle_amp(aval){
+        function handle_acr(aval){
             console.log('AVAL', aval);
-            if (aval == 'AYES') {
-                $('#amp_div').show();
-                $('input[type=checkbox][name=ctip_activity]').attr('data-parsley-required', 'true');
-                $('input[type=checkbox][name=ctip_purpose]').attr('data-parsley-required', 'true');
+            if (aval == 'ICLC') {
+                $('#div_care_sub_option').show();
+                $('#div_care_option').show();
+                $('#care_option').attr("data-parsley-required", "true");
             }else{
-                $('#amp_div').hide();
-                $('input[type=checkbox][name=ctip_activity]').attr('data-parsley-required', 'false');
-                $('input[type=checkbox][name=ctip_purpose]').attr('data-parsley-required', 'false');
+                $('#div_care_sub_option').hide();
+                $('#div_care_option').hide();
+                $('#care_option').attr("data-parsley-required", "false");
+                $('#care_option').removeAttr('required');
             }
         }
     });

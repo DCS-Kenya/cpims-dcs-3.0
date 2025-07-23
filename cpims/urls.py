@@ -25,6 +25,7 @@ from notifications import urls as noti_urls
 from cpovc_ctip import urls as ctip_urls
 from cpovc_afc import urls as ac_urls
 from cpovc_stat_inst import urls as si_urls
+from cpovc_institutions import urls as cci_urls
 from cpovc_pages import urls as pages_urls
 
 from django.views.generic import TemplateView
@@ -66,6 +67,7 @@ urlpatterns = [
     re_path(r'^api/v2/', include(dashboard_api_urls)),
     # SI Module
     path('institutions/si/', include(si_urls)),
+    path('institutions/cci/', include(cci_urls)),
     re_path(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt',
                                                    content_type='text/plain'))]
 

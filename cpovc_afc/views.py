@@ -21,7 +21,9 @@ from .functions import (
     handle_alt_care, save_altcare_form, get_area, get_class_levels,
     get_education, get_form_info, get_crs, get_alt_care,
     get_last_form)
-from .settings import FMS, CTS
+from .settings import FMS, CTS, GFORMS
+
+from cpovc_stat_inst.forms import SIForm
 
 # from cpovc_ovc.decorators import validate_ovc
 
@@ -122,6 +124,7 @@ def view_alternative_care(request, care_id):
             cid = str(case.care_type)[2:]
         else:
             cid = 'XX'
+        print('CID', cid)
         cname = CTS[cid] if cid in CTS else 'Missing Assessments'
         check_fields = ['sex_id', 'case_category_id',
                         'alternative_family_care_type_id',
@@ -207,7 +210,7 @@ def edit_alternative_care(request, care_id):
                       {'status': 200, 'case': case, 'vals': vals,
                        'cid': cid, 'care_name': cname,
                        'form': form, 'categories': categories,
-                       'step_one': step_one})
+                       'step_one': step_one, 'events': forms})
     except Exception as e:
         raise e
 
@@ -235,6 +238,7 @@ def alt_care_form(request, cid, form_id, care_id, ev_id=0):
         all_events = AFCEvents.objects.filter(
             care_id=care_id, form_id=form_id)
         event_ids = all_events.values('event_id')
+        print('events', event_ids)
         if form_id in ['6A', '2A', '4A']:
             events = all_events.filter(event_count=ev_id)
         else:
@@ -242,23 +246,26 @@ def alt_care_form(request, cid, form_id, care_id, ev_id=0):
         # print('Event', form_id, case_id, events)
         fels = {}
         form_els = AFCForms.objects.filter(event_id__in=event_ids)
+        print('EVS', form_els)
         for fel in form_els:
             fid = fel.event_id
             qid = fel.question_id
             qans = fel.item_value
-            if qans == 'QTXT':
+            if qans in ['QTXT', 'FMTF']:
                 qans = fel.item_detail
             if fid not in fels:
                 fels[fid] = {}
             if qid not in fels[fid]:
                 fels[fid][qid] = []
             fels[fid][qid].append(qans)
+        print('FELS', fels)
         for event in all_events:
-            evt_id = event.event_id
-            for itm in fels[evt_id]:
-                itmd = fels[evt_id][itm]
-                setattr(event, itm, itmd)
-                print('QIT', itm, itmd, event)
+            evt_id = str(event.event_id)
+            if evt_id in fels:
+                for itm in fels[evt_id]:
+                    itmd = fels[evt_id][itm]
+                    setattr(event, itm, itmd)
+                    print('QIT', itm, itmd, event)
         print('Done')
         idata = {}
 
@@ -273,6 +280,7 @@ def alt_care_form(request, cid, form_id, care_id, ev_id=0):
                 qid = fdata.question_id
                 q_item = fdata.item_value
                 q_detail = fdata.item_detail
+                print(qid, q_item, q_detail)
                 if qid.endswith('_msc'):
                     if qid not in idata:
                         idata[qid] = []
@@ -281,6 +289,12 @@ def alt_care_form(request, cid, form_id, care_id, ev_id=0):
                     idata[qid] = q_item
                 else:
                     idata[qid] = q_detail
+                # Override from GForms
+                if q_item in ['FMTF', 'FMTA']:
+                    idata[qid] = q_detail
+                else:
+                    if '_msc' not in qid and '_rdo' not in qid and '_sdd' not in qid:
+                        idata[qid] = q_item
             print('idata', idata)
 
         form_name = FMS[form_id] if form_id in FMS else 'Default'
@@ -346,15 +360,22 @@ def alt_care_form(request, cid, form_id, care_id, ev_id=0):
             idata = {}
         form = get_form(form_id, idata, cid)
         tmpl = 'afc/new_form_%s.html' % (form_id)
+        if form_id in GFORMS:
+            tmpl = GFORMS[form_id]['tmpl']
+            gform_id = GFORMS[form_id]['id']
+            form = SIForm(gform_id, data=idata)
         case_uid = str(case_id).replace('-', '')
         case_num = '%s/%s' % (str(case_num).zfill(6), 2022)
+        # Dynamic Back URLS
+        back_url = reverse(view_alternative_care, kwargs={'care_id': care_id})
         return render(request, tmpl,
                       {'status': 200, 'case': case, 'form_id': form_id,
                        'form_name': form_name, 'vals': vals, 'geos': geos,
                        'form': form, 'case_id': case_uid, 'cid': cid,
                        'siblings': siblings, 'ext_ids': ext_ids,
                        'levels': levels, 'sch_class': sch_class,
-                       'case_num': case_num, 'afcs': afcs,
+                       'case_num': case_num, 'afcs': afcs, 'BACK_URL': back_url,
+                       'DELETE_URL': 'cci_form_delete',
                        'events': all_events, 'care': my_care})
     except Exception as e:
         raise e

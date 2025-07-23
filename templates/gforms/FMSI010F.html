@@ -1,0 +1,687 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %} Institutions Forms - {{ form_name }}{% endblock %}
+
+{% load app_filters %}
+
+{% load crispy_forms_tags %}
+
+{% block style_code %}
+<link href="{% static 'plugins/parsley/src/parsley.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/bootstrap-datepicker/css/datepicker3.css' %}" rel="stylesheet" />
+
+<link href="{% static 'plugins/bootstrap-wizard/css/bwizard.min.css' %}" rel="stylesheet" />
+<link href="{% static 'css/si_forms.css' %}" rel="stylesheet" />
+<style type="text/css">
+form#new-form-10F ul {
+      list-style-type: none;
+    }
+  form#new-form-10F li {
+      padding-left: 1em;
+      text-indent: -2em;
+  }
+  .multiselect-container > li > a { 
+    white-space: normal;
+}
+</style>
+{% endblock %}
+
+{% block primary %}
+<!-- begin breadcrumb -->
+<ol class="breadcrumb pull-right">
+	<li><a href="#">Home</a></li>
+	<li class="active">Institutions </li>
+</ol>
+<!-- end breadcrumb -->
+<!-- begin page-header -->
+<h1 class="page-header"> Form {{ form_id }} - {{ form_name }} <small>Home</small></h1>
+<!-- end page-header -->
+{% if messages %}
+<div id="messages" class="alert alert-suc{{ form_name }}cess fade in">
+    <span class="close" data-dismiss="alert">×</span>
+    <i class="fa fa-check fa-2x pull-left"></i>
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.info %} class="{{ message.info }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+<!-- begin row -->
+<div class="row">
+   <div class="col-md-12">
+        <!-- begin panel -->
+        <div class="panel panel-inverse" data-sortable-id="form-stuff-1">
+            <div class="myForm">
+            <div class="divHeader"><img src="{% static 'img/logo_gok.png' %}"><br/>MINISTRY OF LABOUR AND SOCIAL PROTECTION
+            <br/>STATE DEPARTMENT OF SOCIAL PROTECTION <br/>DIRECTORATE OF CHILDREN SERVICES <br/><br/>
+            <b>Statutory Institution - FORM {{ form_id }} - {{ form_name }}</b></div>
+            <div class="cinvoice">
+                <div class="invoice-company">
+                    <span class="pull-right hidden-print">
+                    {% if edit_form == 0 %}
+                    <a href="{% url 'si_document' form_id=form_id %}" class="btn btn-sm btn-danger m-b-10"><i class="fa fa-download m-r-5"></i> Export as PDF</a>
+                    {% endif %}
+                    <button type="button" id="map-print" class="btn btn-sm btn-danger m-b-10" onclick="printChart()"><i class="fa fa-print"></i> Print Form</button>
+                    <a href="{{ BACK_URL }}" class="btn btn-sm btn-success m-b-10"><i class="fa fa-mail-reply-all m-r-5"></i> Back to Care details</a>
+                    </span>
+                    Case No: {{ case_num }}
+
+                </div>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" method="POST" id="new-form-10F" action="." data-parsley-validate="true">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_id" value="{{ form_id }}">
+                    <input type="hidden" name="case_id" value="{{ case.case_id }}">
+                    <input type="hidden" name="person_id" value="{{ case.person.id }}">
+                    <input type="hidden" name="care_id" value="{{ case.care_id }}">
+                    <input type="hidden" name="all_answers" id="all_answers" value="">
+
+                    <div class="row">
+                        <!-- begin wizard step-1 -->
+                        <div class="tab-pane">
+                            <fieldset>
+                                <legend class="pull-left width-full">Section 1 : Personal Information</legend>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">First Name</label>
+                                    <div class="col-md-3">
+                                        {{ case.person.first_name }}
+                                    </div>
+                                    <label class="col-md-2 control-label">Other Names</label>
+                                    <div class="col-md-3">{% if case.person.other_names %}{{ case.person.other_names }}{% else %} Not Provided {% endif %}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Surname</label>
+                                    <div class="col-md-3">
+                                        {{ case.person.surname }}
+                                    </div>
+                                    <label class="col-md-2 control-label">Nickname or given name</label>
+                                    <div class="col-md-3">Not Provided</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Sex</label>
+                                    <div class="col-md-3">
+                                        {{ case.person.sex_id|gen_value:vals }}
+                                    </div>
+                                    <label class="col-md-2 control-label">DOB</label>
+                                    <div class="col-md-3">{{ case.person.date_of_birth }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+
+                            </fieldset>
+                        </div>
+                        <!-- end wizard step-1 -->
+
+                        <!-- begin wizard step-2 -->
+                        <div class="tab-pane">
+                            <fieldset>
+                                <legend class="pull-left width-full">Section 2 : ICP details</legend>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q1_needs.label }}
+                                        {% if form.Q1_needs.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-9">
+                                        {{ form.Q1_needs }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q2_risks.label }}
+                                        {% if form.Q2_risks.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-9">
+                                        {{ form.Q2_risks }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q3_resources.label }}
+                                        {% if form.Q3_resources.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-9">
+                                        {{ form.Q3_resources }}
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Domain <span class="asteriskField">*</span></label>
+                                    <div class="col-md-5">{{ form.Q4_domain }}</div>
+                                    <div class="col-md-6"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-3"><b>Goals <span class="asteriskField">*</span></b></div>
+                                    <div class="col-md-4"><b>Sub-goals <span class="asteriskField">*</span></b></div>
+                                    <div class="col-md-4"><b>Proposed actions <span class="asteriskField">*</span></b></div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-3">{{ form.Q5_goals }}</div>
+                                    <div class="col-md-4">{{ form.Q6_sub_goals }}</div>
+                                    <div class="col-md-4">{{ form.Q7_action }}</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-3"><b>Start date <span class="asteriskField">*</span></b></div>
+                                    <div class="col-md-4"><b>End date <span class="asteriskField">*</span></b></div>
+                                    <div class="col-md-4"><b>Officer's Comment</b></div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-3">{{ form.Q8_start_date }}</div>
+                                    <div class="col-md-4">{{ form.Q9_end_date }}</div>
+                                    <div class="col-md-4">{{ form.Q10_comment }}</div>
+                                    <div class="col-md-1"><button id="btnAddCasePlan" type="button" class="btn btn-sm btn-inverse m-r-5" onClick="AddCasePlan()"> <i class="fa fa-plus" aria-hidden="true"></i> Add Goal</button></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                       <p id="msg"></p>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <table class="table table-condensed slimtable" id="holding_table">
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <div class="col-md-5">
+                                        <p>FAMILY CONFERENCING RESULT</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q11_reccomend.label }}
+                                        {% if form.Q11_reccomend.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-9">
+                                        {{ form.Q11_reccomend }}
+                                    </div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q12_date.label }}
+                                        {% if form.Q12_date.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-3">
+                                        {{ form.Q12_date }}
+                                    </div>
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q13_venue.label }}
+                                        {% if form.Q13_venue.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-3">
+                                        {{ form.Q13_venue }}
+                                    </div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q14_participants.label }}
+                                        {% if form.Q14_participants.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-9">
+                                        {{ form.Q14_participants }}
+                                    </div>
+                                </div>
+                                <div class="form-group">                                      
+                                    <label class="col-md-2 control-label">
+                                        {{ form.Q15_result.label }}
+                                        {% if form.Q15_result.field.required %}<span class="asteriskField">*</span>{% endif %}
+                                    </label>
+                                    <div class="col-md-9">
+                                        {{ form.Q15_result }}
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <!-- end wizard step-2 -->
+
+                    </div>
+                    <hr>                    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Date of ICP <span class="asteriskField">*</span></label>
+                        <div class="col-md-3">
+                            {{ form.event_date }}
+                        </div>
+                        <div class="col-md-5"></div>
+                    </div>
+                    <div class="form-group" id="printId">
+                        <label class="col-md-2 control-label"></label>
+                        <div class="col-md-8">
+                        <button type="submit" class="btn btn-success">Submit Form {{ form_code }} details</button>
+                        <a href="{{ BACK_URL }}">
+                            <button type="button" class="btn btn-default">Cancel</button>
+                        </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% if edit_form > 0 %}
+
+    <div class="row">
+        <!-- begin col-12 -->
+        <div class="col-md-12">
+            <!-- begin panel -->
+            <div class="panel panel-default" data-sortable-id="ui-general-1">
+                <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                    </div>                          
+                    <h4 class="panel-title"><b>Past Events </b></h4>                    
+                </div>
+                <div class="panel-body">
+                    <table id="tableData" class="table table-striped table-bordered">
+                        <thead>
+                            <tr> 
+                                <th>#</th>                                 
+                                <th>Event Date</th>                
+                                <th>Officer</th> 
+                                <th width="25%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if case.events %}
+                            {% for vacancy in case.events %}
+                            <tr id="si_row-{{ vacancy.pk }}"> 
+                                <td>{{ forloop.counter }}</td>                                 
+                                <td>{{ vacancy.event_date }}</td>
+                                <td>N/A</td>
+
+                                <td>
+                                    <a href="{% url EDIT_URL form_id=form_id id=case.person.id ev_id=vacancy.pk|stringformat:'s' %}">
+                                        <button type="button" class="btn btn-primary"> <i class="fa fa-pencil"></i> View / Edit Details</button>
+                                    </a>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="si-{{ vacancy.pk }}" role="dialog">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div style="background-color:#d9edf7" class="modal-header">
+                                                    <button type="button" class="close " data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Delete {{ form_name }} - {{ vacancy.event_date }}</strong></h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete this {{ form_name }} dated {{ vacancy.event_date }} ? </p>
+                                                        <br>
+                                                        <p>Click Yes to proceed to delete or Close to Cancel.</p>
+                                                        <hr>
+                                                        <a><button onclick="deleteEvent('{{ form_id }}', '{{ vacancy.pk }}')" type="button" class="btn btn-danger" data-dismiss="modal">Yes</button></a>
+                                                        <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="#si-{{ vacancy.pk }}" class="btn btn-danger" data-toggle="modal">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </a>                                                        
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6">No previous events available</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>                  
+                </div>
+                <!-- end panel -->
+            </div>
+            <!-- end col-12 -->
+        </div>
+        {% endif %}
+        </div>
+    </div>
+    <!-- end panel -->  
+</div>
+<!-- end row -->
+
+<!-- Modal -->
+<div  class="modal fade" id="successMsg" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="background-color: #8f9191">
+            <div style="background-color: #d9edf7" class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Successful Deletion of Event</strong></h4>
+            </div>
+            <div class="modal-body">
+            <p>Deleted successfully!</p>
+            <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="errorMsg" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div style="background-color: #ff9966" class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Deletion NOT completed.</strong></h4>
+            </div>
+            <div class="modal-body">
+            <p>This item can not be deleted. <span id="msg_id"></span></p>
+            <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block lazy_javascript_code %}
+
+
+<script src="{% static 'plugins/bootstrap-wizard/js/bwizard.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap-multiselect.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('#event_date, .event_date').datepicker({ endDate: '0y', format: 'dd-M-yyyy' });
+    $('.other_date').datepicker({ format: 'dd-M-yyyy' });
+    $("#wizard_a").bwizard({ validating: function (e, ui) { }            
+    });
+
+    $('#Q5_goals, #Q6_sub_goals, #Q7_action').multiselect({
+        includeSelectAllOption: false,
+        enableCaseInsensitiveFiltering: true,
+        numberDisplayed: 1,
+        maxHeight: 300,
+        buttonWidth: '100%',
+        buttonClass: 'btn btn-white'
+    });
+
+    
+    // Handle Domain change
+    var aval = $("#Q4_domain").val();
+        handle_domain(aval);
+    $('#Q4_domain').on('change', function() {
+      handle_domain(this.value);
+    });
+
+    // Handle toggle for birth certificate
+    var avalr = $("input[name='qf1A1_rdo']:checked").val();
+        handle_toggle(avalr, 1);
+    $('input[type=radio][name=qf1A1_rdo]').change(function() {
+        handle_toggle(this.value, 1);
+    });
+    // Handle toggle for committal
+    var avalr2 = $("input[name='qf1A15_rdo']:checked").val();
+        handle_toggle(avalr2, 2);
+    $('input[type=radio][name=qf1A15_rdo]').change(function() {
+        handle_toggle(this.value, 2);
+    }); 
+
+});
+// Delete Django Ajax Call
+function deleteEvent(form_id, event_id) {
+    var csrftoken = $.cookie('csrftoken');
+    $.ajax({
+        type: 'POST',
+        url: "{% url DELETE_URL %}",
+        
+        data: {'form_id': form_id, 'event_id': event_id,
+               'csrfmiddlewaretoken': csrftoken },
+        dataType: 'json',
+        
+        success: function (data) {
+            if (data.deleted == 1) {
+                console.log(data);
+              $("#tableData #si_row-" + event_id).remove();
+              $("#successMsg").modal('show');
+            }
+            if(data.deleted == 0){
+                console.log(data.days)
+                $("#msg_id").html(data.message);
+                $("#errorMsg").modal('show');
+    
+            }
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
+
+function printChart() {
+      //Print Chart
+      var mapContainer;
+      var body               = $('body');
+      mapContainer       = $('div.myForm');
+      if (mapContainer.length == 0){
+          mapContainer = $('div.myForm');
+      }
+      var mapContainerParent = mapContainer.parent();
+      var printContainer     = $('<div>');
+      $(':input').removeAttr('placeholder');
+
+      printContainer
+        .addClass('print-container')
+        .css('width', '100%')
+        .css('height', '800px')
+        .css('-webkit-print-color-adjust','exact')
+        .height(mapContainer.height())
+        .append(mapContainer)
+        .prependTo(body);
+
+      var content = body
+        .children()
+        .not('script')
+        .not(printContainer)
+        .detach();
+      
+      // Patch for some Bootstrap 3.3.x `@media print` styles. :|
+      var patchedStyle = $('<style>')
+        .attr('media', 'print')
+        .text('img { max-width: auto !important; }' +
+              'a[href]:after { content: ""; }')
+        .appendTo('head');
+
+      window.print();
+
+      body.prepend(content);
+      mapContainerParent.prepend(mapContainer);
+
+      printContainer.remove();
+      patchedStyle.remove();
+      $('#print_title').remove();
+}
+
+function handle_domain(domain){
+    console.log(domain);
+
+    var csrftoken = $.cookie('csrftoken');
+    var values = {'domain': domain, 'action': 2,
+                  'csrfmiddlewaretoken': csrftoken };
+    $('#Q5_goals').empty();
+    $('#Q6_sub_goals').empty();
+    $('#Q7_action').empty();
+
+    $.ajax({
+            type: "POST",
+            data: values,
+            dataType: "json",
+            url: "{% url 'settings_lookup' %}",
+            success: function(data){
+                var goals = data.goals;
+                var gaps = data.gaps;
+                var services = data.services;
+                $.each(goals, function(i, items) {
+                    var item_id = items.item_id;
+                    var item_name = items.item_name;
+                    $('#Q5_goals')
+                        .append($("<option></option>")
+                        .attr("value", item_id)
+                        .text(item_name));
+                 });
+                $.each(gaps, function(i, items) {
+                    var item_id = items.item_id;
+                    var item_name = items.item_name;
+                    $('#Q6_sub_goals')
+                        .append($("<option></option>")
+                        .attr("value", item_id)
+                        .text(item_name));
+                 });
+                $.each(services, function(i, items) {
+                    var item_id = items.item_id;
+                    var item_name = items.item_name;
+                    $('#Q7_action')
+                        .append($("<option></option>")
+                        .attr("value", item_id)
+                        .text(item_name));
+                 });
+                $('#Q5_goals').multiselect('rebuild');
+                $('#Q6_sub_goals').multiselect('rebuild');
+                $('#Q7_action').multiselect('rebuild');
+            },
+            error: function(){
+                $('#messages').html("Error")
+            }
+        });
+}
+
+function handle_toggle(elem, itm){
+    console.log('here '+ elem)
+    if (itm == 1){
+        if (elem == 'ANNO') {
+            $("#qf1A2").prop("readonly", true);
+        }else{
+            $("#qf1A2").prop("readonly", false);
+        }
+    }else if (itm == 2){
+        if (elem == 'ANNO') {
+            $("#id_qf1A16").prop("readonly", true);
+            $("#id_qf1A17").prop("readonly", true);
+        }else{
+            $("#id_qf1A16").prop("readonly", false);
+            $("#id_qf1A17").prop("readonly", false);
+        }
+    }
+}
+
+var answers = {};
+function AddCasePlan(){
+    $('#Q5_goals, #Q6_sub_goals, #Q7_action, #Q8_start_date, #Q9_end_date, #id_Q10_comment').removeAttr('required', 'data-parsley-id');
+
+    // Validate form first
+    //var parsley = $('#new-form-10F').parsley();
+    //var validate = parsley.validate();
+    //var isValid = parsley.isValid();
+
+    answers['goals'] = [];
+    answers['subgoals'] = [];
+    answers['proposedactions'] = [];
+    answers['startdate'] = [];
+    answers['enddate'] = [];
+    answers['othercomment'] = [];
+
+    var goal = $('#Q5_goals').val();
+    var subgoal = $('#Q6_sub_goals').val();
+    var proposedaction = $('#Q7_action').val();
+    var startdate = $('#Q8_start_date').val();
+    var enddate = $('#Q9_end_date').val();
+    var othercomment = $('#id_Q10_comment').val();
+
+    console.log('selections', goal, subgoal, proposedaction, startdate);
+
+
+    var rid = Math.floor((Math.random() * 9999) + 1000);
+    if (goal != "" && subgoal != "" && proposedaction != "" && startdate != "" && enddate != "") {
+        
+        // Grid data
+        cols = "<tr id='tmpRow_"+ rid +"'><td>"+ goal +"</td>"
+        cols += "<td>"+ subgoal +"</td><td>"+ proposedaction +"</td><td>"+ startdate +"</td>"
+        cols += "<td>"+ enddate +"</td><td>"+ othercomment +"</td><td>";
+        cols += '<button id="btnAddCasePlan" type="button" class="btn btn-sm btn-danger m-r-5" '
+        cols += 'onClick="RemoveCasePlan('+rid+')"> <i class="fa fa-trash" aria-hidden="true"></i> Remove</button>';
+        cols += "</td></tr>";
+        $("#holding_table").last().append(cols);
+
+        // Add in data
+        var resp = [];
+        var acts = [];
+        answers['goals'].push(goal);
+        answers['subgoals'].push(subgoal)
+        $('#Q5_goals option:selected').each(function(){
+            acts.push($(this).text());
+            answers['goals'].push($(this).val());
+        });
+        $('#Q6_sub_goals option:selected').each(function(){
+            resp.push($(this).text());
+            answers['subgoals'].push($(this).val());
+        });
+
+        answers['proposedactions'].push(proposedaction)
+        answers['startdate'].push(startdate)
+        answers['enddate'].push(enddate)
+        answers['othercomment'].push(othercomment)
+
+        // Clear inputs 
+        $('#Q5_goals').val('')
+        $('#Q6_sub_goals').val('')
+        $('#Q7_action').val('')
+        $('#Q8_start_date').val('')
+        $('#Q9_end_date').val('')
+        $('#id_Q10_comment').val('')
+
+        all_answers[rid] = answers;
+        var all_ans = JSON.stringify(all_answers);
+        $('#all_answers').val(all_ans);
+
+        // Add to the Grid table
+        $('#msg').empty();
+        $("#msg").removeClass( "alert alert-danger fade in" );
+        $("#msg").addClass( "alert alert-success fade in" );
+        $('#msg').html('ICP data successfully added to the Grid.');
+        setTimeout(function() {
+            $('#msg').addClass('hidden')
+        }, 4000);
+    }else{
+        // Warming Message for blank fields
+        $('#msg').empty();
+        $("#msg").removeClass( "alert alert-success fade in" );
+        $("#msg").addClass( "alert alert-danger fade in" );
+        $('#msg').html('ICP is incomplete. Complete the form before you add to the Grid.');
+    }
+
+    // console.log({goal,subgoal,startdate,enddate,othercomment, answers, rid})
+}
+
+function RemoveCasePlan(row_id){
+    // Remove from the table    
+    $('#tmpRow_'+ row_id).remove();
+    // Remove from the JSON
+    var all_ans = $('#all_answers').val();
+    var all_answers = JSON.parse(all_ans);
+    console.log('ALL', all_answers);
+    delete all_answers[row_id];
+    console.log('Final', all_answers);
+    // Save back the edited records
+    var final_ans = JSON.stringify(all_answers);
+    $('#all_answers').val(final_ans);
+
+    // Messages
+    $('#msg').empty();
+    $("#msg").addClass( "alert alert-danger fade in" );
+    $('#msg').html('ICP row successfully removed from the Grid.');
+    setTimeout(function() {
+        $('#msg').addClass('hidden')
+    }, 4000);
+}
+</script>
+{% endblock %}
