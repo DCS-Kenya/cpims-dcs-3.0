@@ -27,6 +27,7 @@ REPORTS['GOK_9'] = 'institution_population'
 REPORTS['GOK_10'] = 'tip'
 REPORTS['GOK_11'] = 'tip_new'
 REPORTS['GOK_12'] = 'u_case_load'
+REPORTS['GOK_13'] = 'ocea_summary'
 # Registers
 REPORTS['GOK_21'] = 'case_load_register'
 REPORTS['GOK_22'] = 'institution_register'
@@ -1666,3 +1667,79 @@ QUERIES['si_vocation'] = QUERIES['si_forms'] % ('FMSI30F')
 QUERIES['si_child_assesment'] = QUERIES['si_forms'] % ('FMSI031F')
 QUERIES['si_youngp_caregiver_case_review'] = QUERIES['si_forms'] % ('FMSI032F')
 
+
+QUERIES['ocea_summary'] = '''
+select ovc_case_record.person_id as cpims_id,
+TO_CHAR(date_case_opened :: DATE, 'dd-Mon-yyyy') as case_date,
+to_char(date_case_opened, 'YYYY')::INTEGER as "case_year",
+TO_CHAR(date_case_opened :: DATE, 'MM-Mon') as "case_month",
+case
+when to_char(date_case_opened, 'MM')::INTEGER BETWEEN 1 AND 3 THEN 3
+when to_char(date_case_opened, 'MM')::INTEGER BETWEEN 4 AND 6 THEN 4
+when to_char(date_case_opened, 'MM')::INTEGER BETWEEN 7 AND 9 THEN 1
+else 2 end as "case_qtr",
+case_serial, concat(case_serial,' - ',c_cat.item_description) as serial_case_category,
+CASE risk_level WHEN 'RLHG' THEN 'High' WHEN 'RLMD' THEN 'Medium' ELSE 'Low' END AS risk_level,
+CASE perpetrator_status WHEN 'PSSL' THEN 'Self' WHEN 'PKNW' THEN 'Unknown'
+WHEN 'PUNK' THEN 'Unknown' ELSE 'Not Available' END AS perpetrator_status,
+cr_cat.item_description as case_reporter,
+CASE reg_person.sex_id WHEN 'SFEM' THEN 'Female' ELSE 'Male' END AS sex,
+date_part('year', age(date_case_opened, reg_person.date_of_birth)) AS age,
+CASE
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) < 6 THEN 'a.[0 - 5 yrs]'
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 6 AND 9 THEN 'b.[6 - 9 yrs]' 
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 10 AND 15 THEN 'c.[10 - 15 yrs]' 
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 16 AND 18 THEN 'd.[16 - 18 yrs]' 
+ELSE 'e.[18+ yrs]' END AS agerange,
+CASE
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) < 5 THEN 'a.[0 - 4 yrs]'
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 5 AND 9 THEN 'b.[5 - 9 yrs]' 
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 10 AND 14 THEN 'c.[10 - 14 yrs]' 
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 15 AND 18 THEN 'd.[15 - 18 yrs]'
+ELSE 'e.[18+ yrs]' END AS knbs_agerange,
+CASE
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) < 6 THEN 'a.[0 - 5 yrs]'
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 6 AND 9 THEN 'b.[6 - 9 yrs]' 
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 10 AND 14 THEN 'c.[10 - 14 yrs]' 
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) BETWEEN 15 AND 17 THEN 'd.[15 - 17 yrs]'
+WHEN  date_part('year', age(date_case_opened, reg_person.date_of_birth)) = 18 THEN 'e.[18 yrs]'
+ELSE 'f.[18+ yrs]' END AS un_agerange,
+CASE exids.identifier WHEN exids.identifier THEN trb.item_description ELSE 'Not Provided' END AS ethnicity,
+CASE ovc_case_record.case_stage WHEN 2 THEN 'Closed' WHEN 1 THEN 'Active' ELSE 'Pending' END AS Case_status,
+ovc_case_record.case_status as case_state,
+CASE ccat.case_nature WHEN 'OOEV' THEN 'One Off' ELSE 'Chronic' END AS Case_Nature,
+ev_cat.item_description as place_of_event, c_cat.item_description as "case category",
+cs_cat.item_description as case_sub_category,
+reg_org_unit.org_unit_name as org_unit, scou_geo.area_name as sub_county,
+cou_geo.area_name as county,
+case omed.mental_condition when 'MNRM' THEN 'Normal' else 'Has Condition' End as mental_condition,
+case omed.physical_condition when 'PNRM' THEN 'Normal' else 'Has Condition' End as physical_condition,
+case omed.other_condition when 'CHNM' THEN 'Normal' else 'Has Condition' End as other_condition,
+CASE cen.service_provided WHEN cen.service_provided THEN intv.item_description ELSE 'Case Open' END AS intervention,
+TO_CHAR(ovc_case_record.timestamp_created :: DATE, 'dd-Mon-yyyy') as system_date,
+case ogf.item_value WHEN 'OAPON' THEN 'Online' WHEN 'OAPOF' THEN 'Offline' else 'Not Provided' End as Exploitation_place,
+1 as ovccount
+from ovc_case_record
+inner join ovc_case_category as ccat on case_id = ccat.case_id_id and ccat.is_void = False
+inner join ovc_case_geo as cgeo on cgeo.case_id_id = case_id
+inner join ovc_medical as omed on omed.case_id_id = case_id
+left outer join reg_person on ovc_case_record.person_id=reg_person.id
+left outer join reg_org_unit on reg_org_unit.id=cgeo.report_orgunit_id
+left outer join list_geo as scou_geo on scou_geo.area_id=cgeo.report_subcounty_id and scou_geo.area_id > 47
+left outer join list_geo as cou_geo on cou_geo.area_id=scou_geo.parent_area_id and cou_geo.area_id < 48
+left outer join ovc_case_sub_category cscat on cscat.case_category_id=ccat.case_category_id
+left outer join list_general c_cat on c_cat.item_id=ccat.case_category and c_cat.field_name = 'case_category_id'
+left outer join list_general ev_cat on ev_cat.item_id=ccat.place_of_event and ev_cat.field_name = 'event_place_id'
+left outer join list_general cr_cat on cr_cat.item_id=case_reporter and cr_cat.field_name = 'case_reporter_id'
+left outer join list_general cs_cat on cs_cat.item_id=cscat.sub_category_id
+left join ovc_case_events as cev on cev.case_id_id = case_id and cev.case_event_type_id = 'CLOSURE' and cev.is_void = false
+left join ovc_case_event_encounters as cen on cen.case_event_id_id=cev.case_event_id
+left outer join list_general intv on intv.item_id=cen.service_provided and intv.field_name = 'intervention_id'
+LEFT OUTER JOIN reg_persons_external_ids as exids on exids.person_id=reg_person.id and exids.identifier_type_id = 'ITRB'
+left outer join list_general trb on trb.item_id=exids.identifier and trb.field_name = 'tribe_category_id'
+left outer join ovc_gen_registration ogr on ogr.case_id=ovc_case_record.case_id
+left outer join ovc_gen_event oge on oge.care_id=ogr.si_id
+left outer join ovc_gen_form ogf on ogf.event_id=oge.event_id and ogf.question_id = 'Q1_gen_place'
+where ccat.case_category in ('CSRG', 'CCDF', 'CTRF', 'CLFC', 'CDSA', 'CSAB', 'CSDQ', 'CHCP', 'CSTC', 'CCEA')
+and date_case_opened between '{start_date}' and '{end_date}' {other_params};
+'''

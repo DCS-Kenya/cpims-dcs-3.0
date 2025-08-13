@@ -414,6 +414,7 @@ function deleteEvent(form_id, event_id) {
 }
 
 $(document).ready(function() {
+    // // {{ allow_edit }} {{ all_perms }} {{ case.vacancy.application_status }}
     {% if allow_edit == 0 and 'U' not in all_perms %}
     $("#new-form-33R :input").prop("disabled", true);
     {% endif %}

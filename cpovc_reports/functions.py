@@ -3332,9 +3332,13 @@ def get_header(element, report_name, region, dates, styles):
         tarehe = datenow.strftime("%d, %b %Y %I:%M %p")
         url = 'https://childprotection.go.ke'
         # Handle headers
-        address = '<b>MINISTRY OF LABOUR AND SOCIAL PROTECTION'
-        address += "<br />STATE DEPARTMENT FOR SOCIAL PROTECTION"
-        address += "<br />DIRECTORATE OF CHILDREN'S SERVICES</b>"
+        dcs_head = settings.DCS
+        ministry = dcs_head['MINISTRY']
+        state_dept = dcs_head['STATE_DEPT']
+        dir_name = dcs_head['NAME']
+        address = '<b>' + ministry
+        address += "<br />" + state_dept
+        address += "<br />%s</b>" % (dir_name)
         report_number = '%s\n%s CPIMS Report\n%s' % (url, report_name, tarehe)
         bar_code = BarCode(value='%s' % (report_number))
         # Logo

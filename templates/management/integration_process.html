@@ -9,6 +9,18 @@
 {% block style_code %}
 <link href="{% static 'plugins/datatables/css/data-table.css' %}" rel="stylesheet" />
 <link href="{% static 'plugins/select2/dist/css/select2.min.css' %}" rel="stylesheet" />
+
+<link rel="stylesheet" href="{% static 'plugins/leaflet/leaflet.css' %}" />
+<script src="{% static 'plugins/leaflet/leaflet.js' %}" ></script>
+
+<style>
+.leaflet-container {
+    height: 400px;
+    width: 780px;
+    max-width: 100%;
+    max-height: 100%;
+}
+</style>
 {% endblock %}
 
 {% block primary %}
@@ -57,7 +69,6 @@
                     <label class="col-md-3 control-label">Case Details</label>
                     <div class="col-md-9">                      
                       <table class="table">
-                        <tr>
                           <thead>
                             <tr><th width="30%">Item</th><th>Details</th></tr>
                           </thead>
@@ -77,8 +88,19 @@
                             <tr><td>Date</td><td>{{ case.case_date }}</td></tr>
                             <tr><td>Description</td><td>{{ case.case_narration }}</td></tr>
                           </tbody>
-                        </tr>
                       </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Case Status</label>
+                    <div class="col-md-9">
+                        {% if case.status == 1 %} Approved {% elif case.status == 2 %} Rejected {% else %} Closed {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Comments</label>
+                    <div class="col-md-9">
+                        {{ case.case_comments }}
                     </div>
                 </div>
                 {% if case.status == 0 %}
@@ -149,14 +171,13 @@
                 <div class="form-groups">
                     <label class="col-md-3 control-label"></label>
                     <div class="col-md-9">
-                        Case Status: {% if case.status == 1 %} Approved {% elif case.status == 2 %} Rejected {% else %} Closed {% endif %}<br><br>
-                        <p>{{ case.case_comments }}</p>
                     <hr>
                     <p>
                       <a href="{% url 'integration_home' %}" class="btn btn-success m-r-5"><i class="fa fa-list"></i> Case Listing</a>
+                      <a href="#modal-map" class="btn btn-sm btn-success" data-toggle="modal" class="btn btn-success m-r-5"><i class="fa fa-map-marker"></i> Map </a>
                       {% if case.status == 1 %}
                       {% if case.case_serial and case.case_serial != 'XXXX' %}
-                      <a href="{% url 'view_case_record_sheet' id=crs_id %}" class="btn btn-success m-r-5"><i class="fa fa-cogs"></i> View CRS ({{ case.case_serial }})</a>
+                      <a href="{% url 'view_case_record_sheet' id=crs_id %}" class="btn btn-success m-r-5"><i class="fa fa-cogs"></i> View CRS </a>
                       {% else %}
                       <a href="{% url 'get_document' doc_id=1 case_id=case.case_id %}" class="btn btn-danger m-r-5"><i class="fa fa-file-pdf-o"></i> Referral Form</a>
                       {% endif %}
@@ -219,6 +240,25 @@
   </div>
 </div>
 <!-- end modal -->
+
+<!-- #modal-map -->
+<div class="modal fade" id="modal-map">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Case on the Map</h4>
+            </div>
+            <div class="modal-body">
+                <div id="map"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:;" class="btn btn-sm btn-white" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end modal -->
 {% endblock %}
 
 {% block lazy_javascript_code %}
@@ -272,6 +312,16 @@ $(document).ready(function() {
         $('#modal-details').modal('show');
         ev.preventDefault();
     });
+
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker([51.5, -0.09]).addTo(map)
+        .bindPopup('A pretty CSS popup.<br> Easily customizable.')
+        .openPopup();
 } );
 </script>
 {% endblock %}

@@ -18,7 +18,7 @@ from cpovc_forms.models import OVCBasicCRS, OVCBasicCategory, OVCBasicPerson
 from cpovc_main.country import COUNTRIES as CLISTS
 
 from cpovc_ovc.models import OVCFacility, OVCSchool, OVCRegistration, OVCHealth
-from . import Country
+from .serializers import Country
 
 
 class UserViewSet(viewsets.ModelViewSet):

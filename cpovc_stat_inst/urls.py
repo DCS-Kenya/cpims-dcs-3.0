@@ -19,6 +19,9 @@ urlpatterns = [
         'document/(?P<form_id>[0-9A-Z]{8})/',
         views.si_document, name='si_document'),
     path('doc/<uuid:event_id>/', views.si_file, name='si_file'),
+    path(
+        'download/<int:person_id>/<uuid:file_id>/', views.download_document,
+        name='download_document'),
 
     # Dahsboards
     path('dashboard/<int:id>/', views.SI_dash_view, name='si_dash_view'),

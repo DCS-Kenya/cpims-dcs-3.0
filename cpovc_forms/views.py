@@ -62,6 +62,15 @@ from cpovc_ctip.settings import CATS
 from cpovc_ctip.forms import CTIPForm
 from cpovc_ctip.functions import handle_ctip, get_ctip
 
+from cpovc_stat_inst.forms import SIForm
+
+from cpovc_stat_inst.functions import CaseObj
+from cpovc_api.models import GenForms, GenMain, GenEvents
+
+from cpovc_api.functions import (
+    save_form, get_events, get_form_details, delete_event,
+    get_event_data)
+
 
 def validate_serialnumber(person_id, subcounty, serial_number):
     try:
@@ -9228,9 +9237,11 @@ def case_info(request, case_id):
         tr_form = CTIPForm(initial=tr_initial_info)
         case_uid = str(case.case_id)
         case_id = case_uid.replace('-', '')
+        events = get_events(request, person_id, GenEvents, 1)
         return render(
             request, 'forms/case_info.html',
-            {'case': case, 'vals': vals, 'form': form, 'cats': case_categories,
+            {'case': case, 'vals': vals, 'form': form,
+             'cats': case_categories, 'events': events,
              'case_uid': case_uid, 'case_id': str(case_id),
              'tr_case': tr_case, 'tr_form': tr_form, 'tr_db': tr_db})
     except Exception as e:
@@ -9265,7 +9276,12 @@ def case_info_form(request, form_id, case_id):
                 tr_case = True
         # Forms
         fid = int(form_id)
+        form_uid = 'FMGN%sF' % (str(form_id).zfill(3))
         fname = tids[fid] if fid in tids else tids[0]
+        if fid > 4:
+            fdetail = get_form_details(request, form_uid)
+            if fdetail:
+                fname = fdetail.form_title
         if request.method == 'POST':
             if fid == 1:
                 case_narration = request.POST.get('case_narration')
@@ -9287,6 +9303,15 @@ def case_info_form(request, form_id, case_id):
             else:
                 # Not implemented
                 print('nothing to do')
+                FormObj = CaseObj()
+                FormObj.forms = GenForms
+                FormObj.main = GenMain
+                FormObj.event = GenEvents
+                save_form(request, FormObj, form_uid, person_id, form_uid)
+                url = reverse(case_info, kwargs={'case_id': case_id})
+                msg = 'General Form (%s) details saved successfully' % fname
+                messages.add_message(request, messages.INFO, msg)
+                return HttpResponseRedirect(url)
             msg = "%s Info saved successfully" % (fname)
             messages.add_message(request, messages.INFO, msg)
             redirect_url = reverse(case_info, kwargs={'case_id': case_id})
@@ -9330,24 +9355,194 @@ def case_info_form(request, form_id, case_id):
         tr_form = CTIPForm(initial=tr_initial_info)
         case_uid = str(case.case_id)
         case_id = case_uid.replace('-', '')
-        templ_name = 'forms/case_info_%s.html' % (str(form_id))
+        fmid = "forms" if form_id not in [1, 2, 3, 4, 5, 6] else str(form_id)
+        templ_name = 'forms/case_info_%s.html' % (fmid)
+        # Dynamic forms
+        idata = {}
+        gform = SIForm(form_uid, data=idata)
+        # Events
+        events = GenEvents.objects.filter(
+            person_id=person_id, is_void=False,
+            form_id=form_uid, related_to_id=None)
         return render(
             request, templ_name,
-            {'case': case, 'vals': vals, 'form': form, 'cats': case_categories,
+            {'case': case, 'vals': vals, 'form': form,
+             'cats': case_categories, 'gform': gform,
              'case_uid': case_uid, 'case_id': str(case_id),
              'tr_case': tr_case, 'tr_form': tr_form,
              'form_name': fname, 'photos': photos,
-             'photo_pp': photo_pp, 'photo_fs': photo_fs})
+             'photo_pp': photo_pp, 'photo_fs': photo_fs,
+             'events': events, 'form_id': fid, 'edit_form': 1,
+             'DELETE_URL': 'gen_form_delete'})
+    except Exception as e:
+        raise e
+    else:
+        pass
+
+@login_required
+def edit_case_info_form(request, form_id, case_id, event_id):
+    """Method to save case information."""
+    try:
+        FormObj = CaseObj()
+        FormObj.forms = GenForms
+        FormObj.main = GenMain
+        FormObj.event = GenEvents
+        check_fields = ['sex_id', 'case_reporter_id',
+                        'case_category_id']
+        tids = {0: "Case Details"}
+        tids[1] = "Additional case Information"
+        tids[2] = "Emergency cases"
+        tids[3] = "Trafficked Persons"
+        tids[4] = "Missing Children"
+        tids[5] = "Alternative Care"
+        tids[6] = "Institution Placements"
+        # Trafficking cases
+        tr_case = False
+        #  End trafficking
+        vals = get_dict(field_name=check_fields)
+        case = OVCCaseRecord.objects.get(case_id=case_id)
+        person_id = case.person_id
+        case_date = case.date_case_opened
+        case_categories = OVCCaseCategory.objects.filter(case_id_id=case_id)
+        for ccat in case_categories:
+            if ccat.case_category in CATS:
+                tr_case = True
+        # Forms
+        fid = int(form_id)
+        form_uid = 'FMGN%sF' % (str(form_id).zfill(3))
+        fname = tids[fid] if fid in tids else tids[0]
+        if fid > 4:
+            fdetail = get_form_details(request, form_uid)
+            if fdetail:
+                fname = fdetail.form_title
+        if request.method == 'POST':
+            if fid == 1:
+                case_narration = request.POST.get('case_narration')
+                case.case_remarks = case_narration
+                case.save(update_fields=["case_remarks"])
+            elif fid == 2:
+                em = request.POST.get('emergency')
+                em_detail = request.POST.get('emergency_detail')
+                save_case_info(request, case, 'OIEM', em, em_detail)
+            elif fid == 3:
+                ctip_params = {}
+                ctip_params['case_id'] = case_id
+                ctip_params['person_id'] = person_id
+                ctip_params['case_date'] = case_date
+                handle_ctip(request, 0, ctip_params)
+            elif fid == 4:
+                pic = handle_photo_upload(request)
+                save_photo(request, pic)
+            else:
+                # Not implemented
+                print('nothing to do')
+                save_form(request, FormObj, form_uid, person_id, form_uid, 2)
+                url = reverse(case_info, kwargs={'case_id': case_id})
+                msg = 'General Form (%s) details saved successfully' % fname
+                messages.add_message(request, messages.INFO, msg)
+                return HttpResponseRedirect(url)
+            msg = "%s Info saved successfully" % (fname)
+            messages.add_message(request, messages.INFO, msg)
+            redirect_url = reverse(case_info, kwargs={'case_id': case_id})
+            return HttpResponseRedirect(redirect_url)
+        initial_info = {'case_narration': case.case_remarks}
+        tr_initial_info = {}
+        case_infos = get_case_info(request, case_id)
+        # Photos
+        photos = get_photo(request, person_id)
+        purl = settings.PHOTO_URL
+        photo_fs = '/static/img/user-full.png'
+        if photos:
+            photo_pp = '%s/%s' % (purl, photos.photo_passport.name)
+            if photos.photo_fullsize:
+                photo_fs = '%s/%s' % (purl, photos.photo_fullsize.name)
+        else:
+            photo_pp = '/static/img/user-2.jpg'
+        print('PP', photo_pp)
+        activities, means, purposes = [], [], []
+        for cinfo in case_infos:
+            info_type = cinfo.info_type
+            if info_type == 'OIEM':
+                initial_info['emergency'] = cinfo.info_item
+                initial_info['emergency_detail'] = cinfo.info_detail
+            elif info_type == 'TACT':
+                activities.append(str(cinfo.info_item))
+            elif info_type == 'TMNS':
+                means.append(str(cinfo.info_item))
+            elif info_type == 'TPPS':
+                purposes.append(str(cinfo.info_item))
+        # Check if in CTiP DB
+        ctip_case = get_ctip(request, case_id)
+        is_traffick = 'AYES' if ctip_case else 'ANNO'
+        tr_initial_info['ctip_activity'] = activities
+        tr_initial_info['ctip_means'] = means
+        tr_initial_info['ctip_purpose'] = purposes
+        tr_initial_info['is_trafficking'] = is_traffick
+
+        print('init info', initial_info)
+        form = CaseInfoForm(initial=initial_info)
+        tr_form = CTIPForm(initial=tr_initial_info)
+        case_uid = str(case.case_id)
+        case_id = case_uid.replace('-', '')
+        fmid = "forms" if form_id not in [1, 2, 3, 4, 5, 6] else str(form_id)
+        templ_name = 'forms/case_info_%s.html' % (fmid)
+        # Dynamic forms
+        idata = get_event_data(form_uid, event_id, FormObj)
+        print(idata)
+        gform = SIForm(form_uid, data=idata)
+        # Events
+        events = GenEvents.objects.filter(
+            person_id=person_id, is_void=False,
+            form_id=form_uid, related_to_id=None)
+        return render(
+            request, templ_name,
+            {'case': case, 'vals': vals, 'form': form,
+             'cats': case_categories, 'gform': gform,
+             'case_uid': case_uid, 'case_id': str(case_id),
+             'tr_case': tr_case, 'tr_form': tr_form,
+             'form_name': fname, 'photos': photos,
+             'photo_pp': photo_pp, 'photo_fs': photo_fs,
+             'events': events, 'edit_form': 0,
+             'DELETE_URL': 'gen_form_delete'})
     except Exception as e:
         raise e
     else:
         pass
 
 
+@login_required
+def gen_forms_delete(request):
+    """Method to delete forms."""
+    try:
+        response = {"message": "Form entry deleted successfully", 'deleted': 1}
+        if request.method == 'POST':
+            form_id = request.POST.get('form_id')
+            event_id = request.POST.get('event_id')
+            # idata = delete_event_data(request, form_id, event_id)
+            FormObjs = CaseObj()
+            FormObjs.forms = GenForms
+            FormObjs.events = GenEvents
+            idata = delete_event(request, FormObjs, form_id, event_id)
+            if idata == 0:
+                response["deleted"] = 0
+                response["message"] = "Error deleting record"
+            elif idata == 2:
+                response["deleted"] = 0
+                response["message"] = "90+ old days events can not be deleted"
+    except Exception as e:
+        response = {"deleted": 0,
+                    "message": "Error deleting record %s" % (str(e))}
+        return JsonResponse(
+            response, content_type='application/json', safe=False)
+    else:
+        return JsonResponse(
+            response, content_type='application/json', safe=False)
+
+
 class Myobject(object):
     pass
 
-# ------------------------------------------------------------------------------------
+
 # New additions after upgrade --------------------------------------------------------
 
 @login_required

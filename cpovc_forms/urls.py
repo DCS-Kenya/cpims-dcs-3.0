@@ -184,6 +184,10 @@ urlpatterns = [
     path(
         'case/<int:form_id>/<uuid:case_id>/',
         views.case_info_form, name='case_info_form'),
+    path(
+        'case/<int:form_id>/<uuid:case_id>/<uuid:event_id>/',
+        views.edit_case_info_form, name='edit_case_info_form'),
+     path('case/delete/', views.gen_forms_delete, name='gen_form_delete'),
 
     # OVC Care - CSI
     path('csi/', views.csi, name='csi'),
@@ -312,6 +316,9 @@ urlpatterns = [
     # cpara edit
     path('cpara/edit/<uuid:id>/', views.edit_cpara, name='edit_cpara'),
     # cpara delete
+    path('cpara/delete/<int:id>/<uuid:btn_event_pk>/',
+         views.delete_cpara, name='delete_cpara'),
+    # General delete
     path('cpara/delete/<int:id>/<uuid:btn_event_pk>/',
          views.delete_cpara, name='delete_cpara'),
 

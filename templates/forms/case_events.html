@@ -955,9 +955,15 @@
                 <b>Close Case</b>&nbsp;&nbsp;<i class="fa fa-close"></i>
             </button>
 
-            {% if case_id  and afc %}
+            {% if case_id and afc %}
             <a href="{% url 'new_alt_care' case_id=case_id %}" class="btn  btn-sm btn-danger m-r-5">
                 <b>Alternative Care</b> &nbsp; &nbsp;<i class="fa fa-file-o"></i>
+            </a>
+            {% endif %}
+
+            {% if case_id and si %}
+            <a href="{% url 'new_si_child_view' crs.person_id %}" class="btn  btn-sm btn-danger m-r-5">
+                <b>Statutory Institution</b> &nbsp; &nbsp;<i class="fa fa-file-o"></i>
             </a>
             {% endif %}
 

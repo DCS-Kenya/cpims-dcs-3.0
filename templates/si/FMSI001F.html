@@ -226,9 +226,36 @@
                     <br>
                     <div class="row">
                         <fieldset>
-                            <legend class="pull-left width-full">Section 3 : Supporting documents</legend>
-                            <p>Please make sure the Social Inquiry and Risk Assesment have also been filled in the system.</p>
+                            <legend class="pull-left width-full">Section 3 : Supporting documents </legend>
+                            <p> Please make sure the Social Inquiry and Risk Assesment have also been filled in the system.</p>
+                            {% if edit_form == 0 %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th><th>Document</th>
+                                        <th>Document #</th><th>Timestamp</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for document in documents %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ document.document_type|gen_value:vals }}</td>
+                                        <td>{{ document.document_number }}</td>
+                                        <td>{{ document.created_at }}</td>
+                                        <td>{% if document.document_id %}<a class="btn btn-sm btn-success" href="{% url 'download_document' person_id=case.person.id file_id=document.document_id %}" target="blank">  View File</a>
+                                    {% endif %}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                             <br>
+                            <div class="alert alert-warning fade in m-b-15">
+                                <strong>Info!</strong> To replace or add a supporting document change the document type below and the corresponding details and the system will upload the new /replace document.
+                                <span class="close" data-dismiss="alert">&times;</span>
+                            </div>
+                            {% endif %}
                             <div class="form-group">
                                 <label class="col-md-2 control-label">
                                 {{ form.Q12A_document_type.label }}
@@ -245,7 +272,7 @@
                             </label>
                                 <div class="col-md-5">{{ form.Q12B_document_file }}</div>
                                 <div class="col-md-4">
-                                    {% if idata.Q12B_document_file %}<a class="btn btn-sm btn-success" href="/static/si_docs/{{ idata.Q12B_document_file }}" target="blank">  View File</a>
+                                    {% if idata.Q12B_document_file %}<a class="btn btn-sm btn-success" href="{% url 'download_document' person_id=case.person.id file_id=idata.Q12B_document_file %}" target="blank">  View File</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -281,6 +308,7 @@
             </div>
         </div>
     </div>
+
     {% if edit_form > 0 %}
     <div class="row">
         <!-- begin col-12 -->

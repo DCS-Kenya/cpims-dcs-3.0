@@ -651,6 +651,7 @@ function getUserOrgUnits(){
                 $('#Q2_admission_inst').val('{{ case.vacancy.institution_id }}');
                 {% endif %}
                 $("#Q2_admission_inst").multiselect('refresh');
+		$('#Q2_admission_inst').attr("data-parsley-required", "true");
             },
             error: function(xhr, status, error)
             {

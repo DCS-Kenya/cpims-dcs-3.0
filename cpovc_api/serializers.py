@@ -6,7 +6,12 @@ from cpovc_main.models import SetupList, SetupGeography
 from cpovc_forms.models import OVCBasicCRS, OVCBasicCategory, OVCBasicPerson
 
 from cpovc_ovc.models import OVCFacility, OVCSchool
-from . import Country
+
+
+class Country(object):
+    def __init__(self, **kwargs):
+        for field in ('id', 'code', 'name'):
+            setattr(self, field, kwargs.get(field, None))
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

@@ -103,6 +103,14 @@
                     <div class="m-t-4">Institutional Placement </div></a>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <a href="{% url 'case_info_form' form_id=7 case_id=case_uid %}">
+                    <i class="fa fa-file fa-1x pull-left fa-fw m-t-4"></i>
+                    <span class="badge pull-right">{% if events.FMGN007F > 0 %}Y{% else %}N{% endif %}</span>
+                    <div class="m-t-4">OCEA Screening Tool </div></a>
+                </td>
+            </tr>
             {% if tr_db %}
             <tr>
                 <td>

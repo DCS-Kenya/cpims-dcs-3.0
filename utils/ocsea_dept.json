@@ -1,0 +1,1186 @@
+[
+    {
+        "pk": 43100,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 3,
+            "field_name": "reunification_basis_id",
+            "item_category": "Reunification basis",
+            "item_id": "REREI",
+            "item_description": "Reintegration",
+            "item_description_short": "Reintegration",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 30706,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 5,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OASA",
+            "item_description": "CSAM / Child pornography",
+            "item_description_short": "CSAM / child pornography",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 30705,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 4,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OAST",
+            "item_description": "Sexual extortion",
+            "item_description_short": "Sexual extortion",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 30704,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 3,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OASE",
+            "item_description": "Sexting",
+            "item_description_short": "Sexting",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 30703,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 2,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OAOG",
+            "item_description": "Online Grooming",
+            "item_description_short": "Online Grooming",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 30702,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 1,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OALS",
+            "item_description": "Live streaming of sexual abuse",
+            "item_description_short": "Live streaming of sexual abuse",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43101,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 6,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OADF",
+            "item_description": "Deep fakes",
+            "item_description_short": "Deep fakes",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43102,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 7,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OATO",
+            "item_description": "Child Sex Tourism",
+            "item_description_short": "Child Sex Tourism",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43103,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 8,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OACB",
+            "item_description": "Cyberbullying",
+            "item_description_short": "Cyberbullying",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43104,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 9,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OASD",
+            "item_description": "Screen addiction",
+            "item_description_short": "Screen addiction",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43105,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 10,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OAIT",
+            "item_description": "Identity theft / Impersonation",
+            "item_description_short": "Identity theft / Impersonation",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43106,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 11,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OARD",
+            "item_description": "Online radicalization",
+            "item_description_short": "Online radicalization",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43107,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 12,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OAIC",
+            "item_description": "Exposure to inappropriate content / online gaming",
+            "item_description_short": "Exposure to inappropriate content",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43108,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 13,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OAGM",
+            "item_description": "Online gambling",
+            "item_description_short": "Online gambling",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43109,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 14,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OADX",
+            "item_description": "Doxing",
+            "item_description_short": "Doxing",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43110,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 15,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OAPH",
+            "item_description": "Phishing",
+            "item_description_short": "Phishing",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43111,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 16,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OACS",
+            "item_description": "Cyber stalking",
+            "item_description_short": "Cyber stalking",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43112,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 17,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OATR",
+            "item_description": "Trolling",
+            "item_description_short": "Trolling",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43113,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 18,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OACE",
+            "item_description": "Cyber enticement",
+            "item_description_short": "Cyber enticement",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43114,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 19,
+            "field_name": "online_abuse_id",
+            "item_category": "Online abuse",
+            "item_id": "OACH",
+            "item_description": "Cyber harassment",
+            "item_description_short": "Cyber harassment",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43115,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 37,
+            "field_name": "intervention_id",
+            "item_category": "Case intervention",
+            "item_id": "ITNTD",
+            "item_description": "Notice and takedown",
+            "item_description_short": "Notice and takedown",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43116,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 38,
+            "field_name": "intervention_id",
+            "item_category": "Case intervention",
+            "item_id": "ITPSS",
+            "item_description": "Psychosocial support",
+            "item_description_short": "Psychosocial support",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43117,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 39,
+            "field_name": "intervention_id",
+            "item_category": "Case intervention",
+            "item_id": "ITVCO",
+            "item_description": "Victim Compensation",
+            "item_description_short": "Victim Compensation",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43118,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 40,
+            "field_name": "intervention_id",
+            "item_category": "Case intervention",
+            "item_id": "ITRES",
+            "item_description": "Restitution",
+            "item_description_short": "Restitution",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43119,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 41,
+            "field_name": "intervention_id",
+            "item_category": "Case intervention",
+            "item_id": "ITSOS",
+            "item_description": "Sensitization on online safety",
+            "item_description_short": "Sensitization on online safety",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43120,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 42,
+            "field_name": "intervention_id",
+            "item_category": "Case intervention",
+            "item_id": "ITOPG",
+            "item_description": "Online parental guidance",
+            "item_description_short": "Online parental guidance",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43121,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 18,
+            "field_name": "case_reporter_id",
+            "item_category": "Case Reporter",
+            "item_id": "CRCBC",
+            "item_description": "Child on behalf of another child",
+            "item_description_short": "Child for another child",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43122,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 14,
+            "field_name": "event_place_id",
+            "item_category": "Place of Event",
+            "item_id": "PECC",
+            "item_description": "Cyber Cafe",
+            "item_description_short": "Cyber Cafe",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43123,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 15,
+            "field_name": "event_place_id",
+            "item_category": "Place of Event",
+            "item_id": "PEVD",
+            "item_description": "Video dens",
+            "item_description_short": "Video dens",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43124,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 35,
+            "field_name": "referral_type_id",
+            "item_category": "Referral made",
+            "item_id": "RMNT",
+            "item_description": "Notice and takedown",
+            "item_description_short": "Notice and takedown",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43125,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 12,
+            "field_name": "immediate_need_id",
+            "item_category": "Immediate needs",
+            "item_id": "EMPSS",
+            "item_description": "Psychosocial Support",
+            "item_description_short": "Psychosocial Support",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43126,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 23,
+            "field_name": "referral_destination_classification",
+            "item_category": "Referral destination specified",
+            "item_id": "RDAHT",
+            "item_description": "AHTCPU",
+            "item_description_short": "AHTCPU",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43127,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 24,
+            "field_name": "referral_destination_classification",
+            "item_category": "Referral destination specified",
+            "item_id": "RDKCT",
+            "item_description": "Kenya Computer Incident Response Team (KE-CIRT)",
+            "item_description_short": "KE-CIRT",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43128,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 25,
+            "field_name": "referral_destination_classification",
+            "item_category": "Referral destination specified",
+            "item_id": "RDCHL",
+            "item_description": "National Child Helpline 116",
+            "item_description_short": "Child Helpline 116",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43129,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 1,
+            "field_name": "oa_abuse_place_id",
+            "item_category": "Online abuse place",
+            "item_id": "OAPON",
+            "item_description": "Online",
+            "item_description_short": "Online",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43130,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 2,
+            "field_name": "oa_abuse_place_id",
+            "item_category": "Online abuse place",
+            "item_id": "OAPOF",
+            "item_description": "Offline",
+            "item_description_short": "Offline",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43131,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 1,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPFB",
+            "item_description": "Facebook",
+            "item_description_short": "Facebook",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43132,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 2,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPWA",
+            "item_description": "WhatsApp",
+            "item_description_short": "WhatsApp",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43133,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 3,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPIG",
+            "item_description": "Instagram",
+            "item_description_short": "Instagram",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43134,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 4,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPTK",
+            "item_description": "TikTok",
+            "item_description_short": "TikTok",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43135,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 5,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPSC",
+            "item_description": "Snapchat",
+            "item_description_short": "Snapchat",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43136,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 6,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPTX",
+            "item_description": "Twitter (X)",
+            "item_description_short": "Twitter (X)",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43137,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 7,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPTG",
+            "item_description": "Telegram",
+            "item_description_short": "Telegram",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43138,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 8,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPYT",
+            "item_description": "YouTube",
+            "item_description_short": "YouTube",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43139,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 9,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPDC",
+            "item_description": "Discord",
+            "item_description_short": "Discord",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43140,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 10,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPRD",
+            "item_description": "Reddit",
+            "item_description_short": "Reddit",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43141,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 11,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPSG",
+            "item_description": "Signal",
+            "item_description_short": "Signal",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43142,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 12,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPLK",
+            "item_description": "LinkedIn",
+            "item_description_short": "LinkedIn",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43143,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 13,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPDS",
+            "item_description": "Dating Site",
+            "item_description_short": "Dating Site",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43144,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 14,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPGS",
+            "item_description": "Gaming Site",
+            "item_description_short": "Gaming Site",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43145,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 15,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPLS",
+            "item_description": "Learning Site",
+            "item_description_short": "Learning Site",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43146,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 16,
+            "field_name": "oa_abuse_platform_id",
+            "item_category": "Online abuse platform",
+            "item_id": "OAPOT",
+            "item_description": "Other",
+            "item_description_short": "Other",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43147,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 1,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OAPSP",
+            "item_description": "Smartphone",
+            "item_description_short": "Smartphone",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43148,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 2,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADDC",
+            "item_description": "Desktop Computer",
+            "item_description_short": "Desktop Computer",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43149,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 3,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADTB",
+            "item_description": "Tablet",
+            "item_description_short": "Tablet",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43150,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 4,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADAA",
+            "item_description": "Amazon Alexa",
+            "item_description_short": "Amazon Alexa",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43151,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 5,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADGA",
+            "item_description": "Google Assistant",
+            "item_description_short": "Google Assistant",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43152,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 6,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADLP",
+            "item_description": "Laptop",
+            "item_description_short": "Laptop",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43153,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 7,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADIP",
+            "item_description": "Ipad",
+            "item_description_short": "Ipad",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43154,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 8,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADGC",
+            "item_description": "Gaming Console",
+            "item_description_short": "Gaming Console",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43155,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 9,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADTV",
+            "item_description": "Smart TV",
+            "item_description_short": "Smart TV",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43156,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 10,
+            "field_name": "oa_abuse_device_id",
+            "item_category": "Online abuse device",
+            "item_id": "OADIT",
+            "item_description": "Internet of Things (Smart Devices)",
+            "item_description_short": "IoT (Smart Devices)",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43157,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 1,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOOD",
+            "item_description": "Child's own device",
+            "item_description_short": "Child's own device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43158,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 2,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOPD",
+            "item_description": "Parent's or caregiver's device",
+            "item_description_short": "Parent's or caregiver's device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43159,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 3,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOSD",
+            "item_description": "Sibling's device",
+            "item_description_short": "Sibling's device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43160,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 4,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAORD",
+            "item_description": "Relative's device (Cousin, uncle, etc.)",
+            "item_description_short": "Relative's device (Cousin, uncle, etc.)",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43161,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 5,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOFD",
+            "item_description": "Friend's device",
+            "item_description_short": "Friend's device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43162,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 6,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOND",
+            "item_description": "Neighbor's device",
+            "item_description_short": "Neighbor's device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    }, 
+    {
+        "pk": 43163,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 7,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOTD",
+            "item_description": "Teacher's or school-issued device",
+            "item_description_short": "Teacher's or school-issued device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43164,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 8,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOSH",
+            "item_description": "Shared household device",
+            "item_description_short": "Shared household device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43165,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 9,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOPC",
+            "item_description": "Public computer (Cyber cafe / library)",
+            "item_description_short": "Public computer (Cyber cafe / library)",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43166,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 10,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOPP",
+            "item_description": "Perpetrator’s device",
+            "item_description_short": "Perpetrator’s device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43167,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 11,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOBD",
+            "item_description": "Borrowed device",
+            "item_description_short": "Borrowed device",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    },
+    {
+        "pk": 43168,
+        "model": "cpovc_main.SetupList",
+        "fields": {
+            "the_order": 12,
+            "field_name": "oa_abuse_device_owner_id",
+            "item_category": "Online abuse device owner",
+            "item_id": "OAOUK",
+            "item_description": "Unknown / Not disclosed",
+            "item_description_short": "Unknown / Not disclosed",
+            "item_sub_category": "",
+            "user_configurable": false,
+            "sms_keyword": false,
+            "is_void": false
+        }
+    }
+]

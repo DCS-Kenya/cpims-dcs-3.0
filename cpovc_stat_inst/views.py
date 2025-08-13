@@ -1,10 +1,11 @@
+import os
 import segno
 # import barcode
 # from barcode import EAN13, Code128
 
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, FileResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -27,13 +28,13 @@ from cpovc_forms.functions import get_person_ids
 from cpovc_registry.models import (
     RegPerson, RegOrgUnit, RegPersonsGuardians, RegPersonsGeo)
 
-from .models import SI_VacancyApp, SIEvents, SIMain
+from .models import SI_VacancyApp, SIEvents, SIMain, SI_Document
 
 from cpovc_forms.models import (
     OVCCaseRecord, OVCPlacement, OVCCaseCategory, OVCCaseGeo)
 from cpovc_forms.forms import OVCSearchForm
 
-from .parameters import DASHES, FDEP, SI_FORMS, FPERM, INSTM
+from .parameters import DASHES, FDEP, SI_FORMS, FPERM, INSTM, RESP_CODE
 
 from django.conf import settings
 DOC_ROOT = settings.DOC_ROOT
@@ -188,10 +189,13 @@ def si_forms(request, form_id, id):
         f_code = form_data['form_code']
         form_code = f_code if f_code else form_id
         if request.method == 'POST':
-            save_form(request, form_id, id)
+            resp_code = save_form(request, form_id, id)
             url = reverse(SI_child_view, kwargs={'id': id})
             msg = 'SI Form (%s) details saved successfully' % form_name
             messages.add_message(request, messages.INFO, msg)
+            if resp_code > 0:
+                msg = RESP_CODE[resp_code] if resp_code in RESP_CODE else 'Error occured'
+                messages.add_message(request, messages.ERROR, msg)
             return HttpResponseRedirect(url)
         check_fields = ['sex_id', 'yesno_id',
                         'relationship_type_id', 'area_type_id']
@@ -227,7 +231,7 @@ def si_forms(request, form_id, id):
                 ffill.append(f)
         all_filled = set(fdeps).issubset(ffill)
         inst_type = request.session.get('ou_type', 'XXXX')
-        print(inst_type)
+        print('Go live problems', inst_type, form_id)
         A_IN = INSTM[form_id] if form_id in INSTM else []
         if inst_type not in A_IN:
             all_filled = True
@@ -264,6 +268,7 @@ def si_forms(request, form_id, id):
         if not all_filled or not perms:
             context['dep_forms'] = dep_forms
             context['dep_perms'] = perms
+            context['case'] = case
             return render(request, 'si/FMSI000R.html', context)
         return render(request, 'si/%s' % tmpl, context)
 
@@ -287,12 +292,16 @@ def si_forms_edit(request, form_id, id, ev_id):
         f_code = form_data['form_code']
         form_code = f_code if f_code else form_id
         if request.method == 'POST':
-            save_form(request, form_id, id, 2)
+            resp_code = save_form(request, form_id, id, 2)
             url = reverse(SI_child_view, kwargs={'id': id})
             msg = 'SI Form (%s) details saved successfully' % form_name
             messages.add_message(request, messages.INFO, msg)
+            if resp_code > 0:
+                msg = RESP_CODE[resp_code] if resp_code in RESP_CODE else 'Error occured'
+                messages.add_message(request, messages.ERROR, msg)
             return HttpResponseRedirect(url)
-        check_fields = ['sex_id', 'relationship_type_id', 'area_type_id']
+        check_fields = ['sex_id', 'relationship_type_id', 'area_type_id',
+                        'si_support_docs_id']
         vals = get_dict(field_name=check_fields)
         case = CaseObj()
         # Case main table
@@ -304,6 +313,7 @@ def si_forms_edit(request, form_id, id, ev_id):
         person = RegPerson.objects.get(id=id, is_void=False)
         vacancy = SI_VacancyApp.objects.filter(
             person_id=id, pk=ev_id, is_void=False).first()
+        print('vacancy', vacancy)
         placement = OVCPlacement.objects.filter(
             person_id=id, is_void=False, is_active=True).first()
         events = SIEvents.objects.filter(
@@ -350,11 +360,20 @@ def si_forms_edit(request, form_id, id, ev_id):
             perms = 'CRUD'
         if record_user_id == user_id and user_level < 3:
             perms = 'CR'
+        if user_level == 3:
+            # perms = 'R'
+            perms = perms
         # print('P', perms, 'AE', allow_edit)
         caregivers = RegPersonsGuardians.objects.select_related().filter(
             child_person_id=person_id, is_void=False, date_delinked=None)
         person_geos = RegPersonsGeo.objects.select_related().filter(
             person_id=person_id, is_void=False, date_delinked=None)
+        # Docs
+        documents = SI_Document.objects.filter(person_id=person_id,
+            form_id=form_id, is_void=False)
+        for doc in documents:
+            doc_id = str(doc.document).split('_')[0]
+            setattr(doc, 'document_id', doc_id)
         tmpl = '%s.html' % form_id
         context = {'form': form, 'case': case, 'vals': vals,
                    'form_id': form_id, 'form_name': form_name,
@@ -363,7 +382,8 @@ def si_forms_edit(request, form_id, id, ev_id):
                    'user_level': user_level, 'orgs': orgs,
                    'vacancy_status': vac_status, 'idata': idata,
                    'allow_edit': allow_edit, 'all_perms': perms,
-                   'caregivers': caregivers, 'person_geos': person_geos}
+                   'caregivers': caregivers, 'person_geos': person_geos,
+                   'documents': documents}
         return render(request, 'si/%s' % tmpl, context)
 
     except Exception as e:
@@ -500,16 +520,18 @@ def si_file(request, event_id):
             "F.No:%s\nCPIMS.ID:%s\n%s\nAID:%s" % (
                 pnc, pid, names, uid))
         qrcode.save(
-            "%s/img/qr_code_%s.png" % (DOC_ROOT, pid),
+            "%s/img/qr/qr_code_%s.png" % (DOC_ROOT, pid),
             scale=3,
         )
-        context['qr_code'] = 'img/qr_code_%s.png' % (pid)
+        context['qr_code'] = 'img/qr/qr_code_%s.png' % (pid)
         html_string = render_to_string('si/document.html', context)
         # Create the PDF from the HTML string
+        print('Vacancy 11')
         HTML(
             string=html_string,
             base_url=request.build_absolute_uri()).write_pdf(response)
     except Exception as e:
+        print('Error generating Vacancy Confirmation - %s' % str(e))
         raise e
     else:
         return response
@@ -569,3 +591,20 @@ def SI_dash_view(request, id):
 
     except Exception as e:
         raise e
+
+
+def download_document(request, person_id, file_id):
+    """Document download"""
+    try:
+        pid = str(person_id).zfill(10)
+        file_name = str(file_id) + "_" + pid + ".pdf"
+        filepath = os.path.join(settings.MEDIA_ROOT, "si", file_name)
+        print(filepath)
+        return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
+    except Exception as e:
+        print("Error getting file - %s" % str(e))
+        messages.error(request, "File does not exist")
+        # return HttpResponseRedirect(reverse("appname:payslip", args=(employee,)))
+    else:
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % file_name

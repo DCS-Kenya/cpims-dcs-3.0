@@ -183,3 +183,7 @@ INSTM['FMSI036F'] = ['TNRH', 'TNRS', 'TNRR']
 INSTM['FMSI036F'] = ['TNRH', 'TNRS', 'TNRR']
 INSTM['FMSI038F'] = ['TNRH', 'TNRS', 'TNRR']
 INSTM['FMSI039F'] = ['TNRH', 'TNRS', 'TNRR']
+
+# Response codes
+RESP_CODE = {}
+RESP_CODE[9] = "Uploaded file not allowed. Allowed are PDF."

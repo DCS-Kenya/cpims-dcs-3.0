@@ -29,7 +29,7 @@ SECRET_KEY = 'f1&qcqi&cfbt)yfz0hco)^4qlenw7(kd1j#i18jpkta(oj8)if'
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = ['childprotection.go.ke', 'www.childprotection.go.ke', 'localhost']
+ALLOWED_HOSTS = ['childprotection.go.ke', 'test.cpims.net', 'localhost']
 
 env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, '.env'))
@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'cpovc_stat_inst',
     'cpovc_institutions',
     'cpovc_pages',
+    'cpovc_api',
     'notifications',
     'crispy_forms',
     'crispy_bootstrap3',
@@ -235,8 +236,8 @@ LOGIN_URL = '/login'
 
 # Ministry Details
 DCS = {}
-DCS['MINISTRY'] = 'MINISTRY OF LABOUR AND SOCIAL PROTECTION'
-DCS['STATE_DEPT'] = 'STATE DEPARTMENT FOR SOCIAL SECURITY AND PROTECTION'
+DCS['MINISTRY'] = 'MINISTRY OF GENDER, CULTURE AND CHILDREN SERVICES'
+DCS['STATE_DEPT'] = 'STATE DEPARTMENT FOR CHILDREN SERVICES'
 DCS['NAME'] = 'DIRECTORATE OF CHILDREN SERVICES'
 
 MEDIA_PHOTOS = os.path.join(BASE_DIR, 'photos')

@@ -30,14 +30,29 @@
 	        Please visit our <a href="{% url 'home' %}" class="text-success">home page</a> or 
 	        <a href="{% url 'login' %}" class="text-success">login page</a> to start a fresh or contact administrator at cpims&lt;@&gt;labour&lt;dot&gt;go.ke
 	    </div>
-	        <span class="promo m-t-40">
-	            <p>
-	                <img src="{% static 'img/logo_public.jpg' %}" height="80">
-	            </span>
-	            <hr />
-	            <p class="text-center text-inverse">
-	                &copy; {% now "Y" %} Directorate of Children Services (DCS). All Rights Reserved.
-	            </p>
+        <fieldset>
+            <legend>Partners</legend>
+            <span class="promo">
+                <p>
+                 <div class="row branding">                      
+                  <div class="column">
+                    <img src="{% static 'img/USAID-logo.png' %}" height="40" alt="USAID" >
+                  </div>
+                  <div class="column">
+                    <img src="{% static 'img/PEPFAR-logo.png' %}" height="60" alt="PEPFAR" >
+                  </div>
+                  <div class="column-l">
+                    <img src="{% static 'img/UNICEF-logo.png' %}" height="40" alt="UNICEF" >
+                  </div>
+                </div>
+                </p>
+                </span>                    
+            </fieldset>
+            <a href="/partners/" class="m-r-0"> <i class="fa fa-plus" aria-hidden="true"></i> More Partners </a>
+            <hr />
+            <p class="text-inverse">
+                &copy; {% now "Y" %} Directorate of Children Services (DCS). All Rights Reserved.
+            </p>
     </div>
     <!-- end register-content -->
 </div>

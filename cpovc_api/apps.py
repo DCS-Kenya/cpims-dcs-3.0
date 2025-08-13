@@ -1,8 +1,10 @@
+"""Accessp app with password policies."""
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
-class CpovcApiConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
+class APIAppConfig(AppConfig):
+    """Password policies."""
+
     name = 'cpovc_api'
-
-    verbose_name = 'API Management'
+    verbose_name = _('Common API')

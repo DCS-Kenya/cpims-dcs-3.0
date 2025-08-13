@@ -85,6 +85,7 @@ def save_form(request, form_id, person_id, edit_id=1):
         all_answers = request.POST.get('all_answers', '{}')
         si_datas = json.loads(all_answers)
         print('JSONS', si_datas)
+        print("POST", request.POST)
         event_date = convert_date(ev_date) if ev_date else timezone.now()
         case_id = request.POST.get('case_id', None)
         print('Final Check', form_id, person_id, case_id)
@@ -94,12 +95,13 @@ def save_form(request, form_id, person_id, edit_id=1):
         questions = ListQuestions.objects.filter(
             form__form_guid=form_id, is_void=False)
         for fm in questions:
+            fm_id = fm.question_code
             fd = {'id': fm.question_code, 'label': fm.question_text,
                   'type_id': fm.answer_type_id,
                   'field_id': fm.answer_field_id,
                   'set_id': fm.answer_set_id,
                   'is_required': fm.question_required}
-            fms[fm] = fd
+            fms[fm_id] = fd
         # Vacancy application has its own table the rest is vertical table
         care_id = si_obj.pk
         event_obj = save_event(
@@ -112,8 +114,12 @@ def save_form(request, form_id, person_id, edit_id=1):
                        event_id, event_date, si_datas)
         # Defaults
         itdl = None
+        f_name = None
+        response_code = 0
         qdels = {}
+        print("FMS", fms)
         for fm in fms:
+            itdl = None
             qid = fms[fm]['id']
             qtype = fms[fm]['type_id']
             q_values = []
@@ -129,25 +135,30 @@ def save_form(request, form_id, person_id, edit_id=1):
                     u_file = request.FILES["Q12B_document_file"]
                     f_name = handle_uploads(
                         request, u_file, form_id, person_id)
-                    q_value = f_name
-                    q_values = [q_value]
+                    if f_name:
+                        q_value = f_name.split('_')[0]
+                        q_values = [q_value]
+                    else:
+                        response_code = 9
             else:
                 q_value = request.POST.get(qid, None)
                 q_values = [q_value]
             for q_val in q_values:
+                print("Qs1", qid, q_val, itdl)
                 if q_val:
                     if qtype in ['FMTF', 'FMTA', 'FMFL']:
                         q_val, itdl = qtype, q_val
+                    print("Qs2", qid, q_val, itdl)
                     obj, created = SIForms.objects.update_or_create(
                         event_id=event_id, question_id=qid,
                         item_value=q_val,
                         defaults={'item_detail': itdl})
-            # Handle delete for checkboxes
-            for qid in qdels:
-                qitms = qdels[qid]
-                SIForms.objects.filter(
-                    event_id=event_id, question_id=qid).exclude(
-                    item_value__in=qitms).delete()
+        # Handle delete for checkboxes
+        for qid in qdels:
+            qitms = qdels[qid]
+            SIForms.objects.filter(
+                event_id=event_id, question_id=qid).exclude(
+                item_value__in=qitms).delete()
         # Special case of Vacancy application
         if form_id == 'FMSI001F':
             judge_name = get_data(request, 'Q5_magistrate_name')
@@ -259,9 +270,10 @@ def save_form(request, form_id, person_id, edit_id=1):
                     pl.is_active = False
                     pl.save(update_fields=['is_active'])
     except Exception as e:
+        print("Error saving / editing SI forms - %s" % str(e))
         raise e
     else:
-        pass
+        return response_code
 
 
 def get_data(request, f_id, f_type=1):
@@ -536,16 +548,19 @@ def handle_uploads(request, f, form_id, person_id):
         pid = str(person_id).zfill(10)
         fid = str(uuid.uuid4())
         allowed_exts = ["application/pdf"]
-        print('Uploads', request.POST)
+        print('Uploads', ctype, request.POST)
         f_name = None
         doc_type = request.POST.get('Q12A_document_type')
+        doc_number = request.POST.get('Q12C_document_number')
         if ctype in allowed_exts:
             f_ext = ctype.split('/')[1].replace('jpeg', 'jpg')
             f_name = '%s_%s.%s' % (fid, pid, f_ext)
-            with open(MEDIA_ROOT + '/si_docs/' + f_name, 'wb+') as destination:
+            with open(MEDIA_ROOT + '/si/' + f_name, 'wb+') as destination:
                 for chunk in f.chunks():
                     destination.write(chunk)
-            save_document(request, form_id, person_id, doc_type, f_name)
+            save_document(request, form_id, person_id, doc_type, doc_number, f_name)
+        else:
+            print("Extension not allowed - %s" % str(ctype))
     except Exception as e:
         print('Error uploading file - %s' % (str(e)))
         return None
@@ -553,12 +568,14 @@ def handle_uploads(request, f, form_id, person_id):
         return f_name
 
 
-def save_document(request, form_id, person_id, doc_type, document):
+def save_document(request, form_id, person_id, doc_type, doc_number, document):
     try:
         user_id = request.user.id
         doc, created = SI_Document.objects.update_or_create(
-            form_id=form_id, person_id=person_id, document_type=doc_type,
+            form_id=form_id, person_id=person_id,
+            document_type=doc_type,
             defaults={'document': document,
+                      'document_number': doc_number,
                       'created_by_id': user_id,
                       'is_void': False
                       })

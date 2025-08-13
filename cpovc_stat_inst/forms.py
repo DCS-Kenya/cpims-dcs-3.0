@@ -55,12 +55,15 @@ class SIForm(forms.Form):
                         attrs={'placeholder': '',
                                'class': 'form-control', 'rows': '%s' % rows}))
             elif type_id == 'FMCB':
+                min_cnt = 1 if is_required else 0
                 f_data = forms.MultipleChoiceField(
                     choices=choices,
                     label=f_label,
                     required=is_required,
                     widget=forms.CheckboxSelectMultiple(
-                        attrs={'data-parsley-errors-container': err_id}))
+                        attrs={'data-parsley-errors-container': err_id,
+                               'data-parsley-mincheck': min_cnt,
+                               'data-parsley-required': is_required}))
             elif type_id == 'FMFL':
                 f_data = forms.FileField(
                     label=f_label,

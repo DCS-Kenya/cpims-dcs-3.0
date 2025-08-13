@@ -161,11 +161,12 @@ class SI_Document(models.Model):
     person = models.ForeignKey(RegPerson, on_delete=models.CASCADE)
     form_id = models.CharField(max_length=10, null=True)
     document_type = models.CharField(max_length=10)
-    document = models.FileField(upload_to='si_docs/')
+    document_number = models.CharField(max_length=20, default="000")
+    document = models.FileField(upload_to='reports/si/')
     is_void = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         AppUser, on_delete=models.CASCADE, null=True)
-    created_at = models.DateField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         db_table = 'si_document'

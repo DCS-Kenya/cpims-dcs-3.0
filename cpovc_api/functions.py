@@ -3,7 +3,7 @@ import uuid
 from django.utils import timezone
 from django.db.models import Count
 
-from cpovc_main.models import ListQuestions
+from cpovc_main.models import ListQuestions, Forms
 from cpovc_main.functions import convert_date, get_days_difference
 from cpovc_afc.models import AFCMain, AFCEvents
 
@@ -120,15 +120,17 @@ def save_form(request, FormObjs, form_id, person_id, form_guid, edit_id=1):
             save_jsons(request, form_id, person_id, care_id,
                        event_id, event_date, si_datas, FormObjs)
         # Defaults
+        print('FMS', fms)
         itdl = None
         qdels = {}
         for fm in fms:
             qid = fms[fm]['id']
             qtype = fms[fm]['type_id']
             q_values = []
+            print('EVS', event_id, qid, qtype)
             if qtype == 'FMCB':
-                q_values = request.POST.getlist(qid, None)
-                qdels[qid] = q_values
+                mq_values = request.POST.getlist(qid, None)
+                qdels[qid] = mq_values
             elif qtype == 'FMTF' or qtype == 'FMTA':
                 q_value = request.POST.get(qid, None)
                 q_values = [q_value]
@@ -144,19 +146,26 @@ def save_form(request, FormObjs, form_id, person_id, form_guid, edit_id=1):
                 q_value = request.POST.get(qid, None)
                 q_values = [q_value]
             for q_val in q_values:
+                print('INS', event_id, qid, q_val, itdl)
                 if q_val:
                     if qtype in ['FMTF', 'FMTA', 'FMFL']:
                         q_val, itdl = qtype, q_val
                     obj, created = FormObj.objects.update_or_create(
                         event_id=event_id, question_id=qid,
-                        item_value=q_val,
-                        defaults={'item_detail': itdl})
-            # Handle delete for checkboxes
-            for qid in qdels:
-                qitms = qdels[qid]
-                FormObj.objects.filter(
-                    event_id=event_id, question_id=qid).exclude(
-                    item_value__in=qitms).delete()
+                        defaults={'item_detail': itdl, 'item_value': q_val})
+        # Handle delete for Checkboxes
+        print("checkboxes", qdels)
+        for qid in qdels:
+            qitms = qdels[qid]
+            # Update / create
+            for qitm in qitms:
+                obj, created = FormObj.objects.update_or_create(
+                    event_id=event_id, question_id=qid, item_value=qitm,
+                    defaults={'item_detail': None})
+            # Delete not in list
+            FormObj.objects.filter(
+                event_id=event_id, question_id=qid).exclude(
+                item_value__in=qitms).delete()
         # Special case of Admission form
         if form_id == 'FMSI004F':
             print('OK')
@@ -294,6 +303,7 @@ def get_event_data(form_id, event_id, FormObjs):
         ev_date = event.event_date
         event_date = ev_date.strftime('%d-%b-%Y')
         datas = FormObj.objects.filter(event_id=event_id, is_void=False)
+        print('FGFGFGFG', datas)
         for data in datas:
             qid = data.question_id
             qval = data.item_value
@@ -601,3 +611,36 @@ def dcs_dashboard(request, params):
         return dash
     else:
         return dash
+
+
+def get_form_details(request, form_id):
+    """ Method to get form details."""
+    try:
+        form = Forms.objects.get(form_guid=form_id, is_void=False)
+    except Exception as e:
+        return None
+    else:
+        return form
+
+
+
+def delete_event(request, FormObjs, form_id, event_id):
+    """Method to GET event data."""
+    try:
+        cnt = 2
+        EventObj = FormObjs.events
+        FormsObj = FormObjs.forms
+        datas = EventObj.objects.get(pk=event_id)
+        delta = get_days_difference(datas.timestamp_created)
+        print("DELTA", delta)
+        if delta < 90:
+            cnt = 1
+            datas.is_void = True
+            datas.save(update_fields=["is_void"])
+            # Hard delete the form elements
+            FormsObj.objects.filter(event_id=event_id).delete()
+    except Exception as e:
+        print('Error getting idata %s' % str(e))
+        return 0
+    else:
+        return cnt
