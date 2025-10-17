@@ -45,7 +45,7 @@
                 <input type='radio' class="edit_org" name='edit_org' value="1" checked="checked" id="edit_org_1"> Update Organization Unit registration details
 		        <div class="separator"><p></p></div>
 		        <div id="edit_part">
-					<div id="wizard">
+					<div id="wizard-ou">
 						<ol>
 							<li>
 							    About the Organisation 
@@ -58,14 +58,14 @@
 							<li>
 							    Location
 							    <small>Where located and/or providing services</small>
+							</li>							
+							<li>
+							    Contact
+							    <small>Organisation Unit contact details</small>
 							</li>
 							<li>
 							    Services &amp; Programs
 							    <small>Services / Welfare programs details</small>
-							</li>
-							<li>
-							    Contact
-							    <small>Organisation Unit contact details</small>
 							</li>
 						</ol>
 						<!-- begin wizard step-1 -->
@@ -182,6 +182,18 @@
 						<!-- begin wizard step-4 -->
 					    <div class="wizard-step-4">
 						    <fieldset>
+								<legend class="pull-left width-full">Contacts</legend>
+                                <!-- begin row -->
+                                <div class="row">
+	                                    {% crispy cform %}
+                                </div>
+                                <!-- end row -->
+                            </fieldset>
+                        </div>
+						<!-- end wizard step-4 -->
+						<!-- begin wizard step-5 -->
+					    <div class="wizard-step-5">
+						    <fieldset>
 								<legend class="pull-left width-full">Services and Programs</legend>
                                 <!-- begin row -->
                                 <div class="row">
@@ -235,19 +247,8 @@
                                 <!-- end row -->
                             </fieldset>
                         </div>
-						<!-- end wizard step-4 -->
-						<!-- begin wizard step-5 -->
-					    <div class="wizard-step-5">
-						    <fieldset>
-								<legend class="pull-left width-full">Contacts</legend>
-                                <!-- begin row -->
-                                <div class="row">
-	                                    {% crispy cform %}
-                                </div>
-                                <!-- end row -->
-                            </fieldset>
-                        </div>
 						<!-- end wizard step-5 -->
+						
 					</div>
 					</div><!-- end view part -->
 		            <!-- end panel -->
@@ -361,6 +362,57 @@
 		  });
 		</script>
 	<script>
+		//
+
+		var error_msg = 'Please provide required ';
+    $("#mysubmit").removeClass( "btn-primary" ).attr("disabled", "disabled");
+
+    
+    $("#wizard-ou").bwizard({ validating: function (e, ui) {
+        $(".alert").hide();
+         if (ui.index == 0) {
+            // step-1 validation
+            if (false === $('form[name="form-wizard"]').parsley().validate('primary')) {
+                $(".alert").show();
+                $('.invalid-form-message').html(error_msg + 'details about the organisation.');
+                return false;
+            }
+        } else if ((ui.index == 1) && (ui.nextIndex > ui.index)){
+            // step-2 validation
+              if (false === $('form[name="form-wizard"]').parsley().validate('primary1')) {
+                $(".alert").show();
+                $('.invalid-form-message').html(error_msg + 'organisation type details.');
+                return false;
+            }
+        } else if ((ui.index == 2) && (ui.nextIndex > ui.index)) {
+            // step-3 validation
+            if (false === $('form[name="form-wizard"]').parsley().validate('primary2')) {
+                $(".alert").show();
+                $('.invalid-form-message').html(error_msg + 'location details.');
+                return false;
+            }
+        } else if ((ui.index == 3) && (ui.nextIndex >= ui.index)) {
+            // step-4 validation
+            if (false === $('form[name="form-wizard"]').parsley().validate('primary3')) {
+                $(".alert").show();
+                $('.invalid-form-message').html(error_msg + 'services details.');
+                return false;
+            }
+        }else if ((ui.index == 4) && (ui.nextIndex >= ui.index)) {
+            // step-4 validation
+            if (false === $('form[name="form-wizard"]').parsley().validate('primary4')) {
+                $(".alert").show();
+                $('.invalid-form-message').html(error_msg + 'contacts details.');
+                return false;
+            }
+        }
+        if (ui.nextIndex == 4) {
+            $("#mysubmit").addClass( "btn-primary" ).removeAttr("disabled");
+        }else{
+            $("#mysubmit").removeClass( "btn-primary" ).attr("disabled", "disabled");
+        }
+    }});
+    //
 		jQuery(document).ready(function() {
 			$('html,body').scrollTop(0);
 			FormWizardValidation.init();
@@ -418,7 +470,7 @@
 			});
 			$("#id_org_unit_category").attr('disabled', 'disabled');
 			//$("#id_org_unit_type").attr('disabled', 'disabled');
-			$("#id_parent_org_unit").attr('disabled', 'disabled');
+			//$("#id_parent_org_unit").attr('disabled', 'disabled');
 			$(".edit_org").change(function(e) {
 			var edit_org = $('input[name=edit_org]:checked', '#edit_org_unit').val();
 			if (edit_org == '2'){
@@ -505,7 +557,13 @@
 			$("#mysubmit").addClass( "btn-primary" ).removeAttr("disabled");
 			$(".edit_org").click(function(e) {
 				var res = $('input[name=edit_org]:checked', '#edit_org_unit').val();
-				if (res == '2'){
+				if (res == '3'){
+			       $("#edit_part").hide();
+			       $("#cdate").show();
+			       $("#editdate").prop("readonly", false);
+			       $("#mysubmit").addClass( "btn-primary" ).removeAttr("disabled");
+			       $('#edit_org_unit').parsley().destroy();
+				}else if (res == '2'){
 			       $("#edit_part").hide();
 			       $("#cdate").show();
 			       $("#editdate").prop("readonly", false);

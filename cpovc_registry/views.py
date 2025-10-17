@@ -235,6 +235,7 @@ def register_edit(request, org_id):
             county = request.POST.getlist('county')
             sub_county = request.POST.getlist('sub_county')
             ward = request.POST.getlist('ward')
+            parent_unit_id = request.POST.get('parent_org_unit')
             if edit_type == 1:
                 # This is a normal edit
                 print('Normal edit')
@@ -243,8 +244,10 @@ def register_edit(request, org_id):
                 units.org_unit_type_id = org_unit_type
                 units.date_operational = reg_date
                 units.handle_ovc = handles_ovc
+                units.parent_org_unit_id = parent_unit_id
                 units.save(update_fields=["org_unit_name", "org_unit_type_id",
-                                          "date_operational", "handle_ovc"])
+                                          "date_operational", "handle_ovc",
+                                          "parent_org_unit_id"])
                 # Update registration details
                 org_reg_type = request.POST.get('org_reg_type')
                 reg_number = request.POST.get('legal_reg_number')

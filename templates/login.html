@@ -55,12 +55,12 @@
             <div class="login-buttons">
                 <button type="submit" class="btn btn-success btn-block btn-lg">Sign in</button>
             </div>
-            <div class="m-t-10 m-b-10 p-b-10">
+            <div class="m-t-20 m-b-20 p-b-20">
                 Not registered yet? Click <a href="{% url 'access' %}" class="text-success">here</a> to request for access<br>
                 Forgot password? Click <a href="{% url 'password_reset' %}" class="text-success">here</a> to change password
                 <br><br>
-                <a href="http://data.childprotection.go.ke:8040" class="text-success">Child Protection Data Portal</a> | 
-                <a href="https://migecah.go.ke/" target="blank" class="text-success">Ministry website</a> | 
+                <a href="http://data.childprotection.go.ke" class="text-success">Child Protection Data Portal</a> | 
+                <a href="http://socialprotection.go.ke" target="blank" class="text-success">Ministry website</a> | 
                 <a href="https://test.cpims.net" class="text-danger">Test CPIMS</a>
             </div>
             <fieldset>
@@ -79,13 +79,12 @@
                       </div>
                     </div>
                     </p>
-                    </span>                    
+                    </span>
+                    <hr />
+                    <p class="text-center text-inverse">
+                        &copy; {% now "Y" %} Directorate of Children Services (DCS). All Rights Reserved.
+                    </p>
                 </fieldset>
-                <a href="/partners/" class="m-r-0"> <i class="fa fa-plus" aria-hidden="true"></i> More Partners </a>
-                <hr />
-                <p class="text-inverse">
-                    &copy; {% now "Y" %} Directorate of Children Services (DCS). All Rights Reserved.
-                </p>
         </form>
     </div>
     <!-- end register-content -->

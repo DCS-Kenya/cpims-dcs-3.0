@@ -815,7 +815,8 @@ class FormRegistryNew(forms.Form):
         label=_('Select service'),
         required=True,
         widget=forms.CheckboxSelectMultiple(
-            attrs={'data-parsley-errors-container': '#error_service_OUSC'}))
+            attrs={'data-parsley-errors-container': '#error_service_OUSC',
+                   'data-parsley-group': 'primary4'}))
 
 
 class FormContact(forms.Form):

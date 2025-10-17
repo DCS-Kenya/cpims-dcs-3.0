@@ -29,9 +29,11 @@ SECRET_KEY = 'f1&qcqi&cfbt)yfz0hco)^4qlenw7(kd1j#i18jpkta(oj8)if'
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = ['childprotection.go.ke', 'test.cpims.net', 'localhost']
+ALLOWED_HOSTS = ['childprotection.go.ke', 'www.childprotection.go.ke']
 
-env = environ.Env()
+env = environ.Env(
+    DEBUG=(bool, False),
+)
 env.read_env(os.path.join(BASE_DIR, '.env'))
 
 cpims_db_host = env('CPIMS_HOST')
@@ -40,7 +42,9 @@ cpims_db_instance = env('CPIMS_DB')
 cpims_db_port = env('CPIMS_PORT')
 cpims_db_user = env('CPIMS_DBUSER')
 
-DEBUG = env('CPIMS_DEBUG')
+# DEBUG = env('CPIMS_DEBUG')
+DEBUG = False
+
 
 # Application definition
 
@@ -236,8 +240,8 @@ LOGIN_URL = '/login'
 
 # Ministry Details
 DCS = {}
-DCS['MINISTRY'] = 'MINISTRY OF GENDER, CULTURE AND CHILDREN SERVICES'
-DCS['STATE_DEPT'] = 'STATE DEPARTMENT FOR CHILDREN SERVICES'
+DCS['MINISTRY'] = 'MINISTRY OF LABOUR AND SOCIAL PROTECTION'
+DCS['STATE_DEPT'] = 'STATE DEPARTMENT FOR SOCIAL SECURITY AND PROTECTION'
 DCS['NAME'] = 'DIRECTORATE OF CHILDREN SERVICES'
 
 MEDIA_PHOTOS = os.path.join(BASE_DIR, 'photos')

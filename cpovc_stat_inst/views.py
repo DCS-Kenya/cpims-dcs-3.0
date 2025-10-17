@@ -144,6 +144,13 @@ def SI_child_view(request, id):
             is_allowed = True
         # Events count
         forms = get_events(request, id, 1)
+        fmk = 0
+        fmks = ['FMSI002F', 'FMSI003F', 'FMSI005F']
+        for fm in forms:
+            if fm in fmks:
+                fmk += forms[fm]
+        if user_level == 1 and fmk < 3:
+            is_allowed = True
         check_fields = ['sex_id', 'si_unit_type_id', 'case_category_id',
                         'cci_unit_type_id']
         vals = get_dict(field_name=check_fields)
@@ -173,16 +180,18 @@ def si_forms(request, form_id, id):
         if si_main:
             vacancy = SI_VacancyApp.objects.filter(
                 person_id=id, case_id=si_main.case_id).first()
-        print('Vac', vacancy)
+        print('Vacancy - ', vacancy)
         user_level = get_user_level(request)
         care_id = None
         case_id = None
         if si_main:
+            print("Has si main", si_main)
             care_id = si_main.pk
             case_id = si_main.case_id
             if si_main.case:
                 idata['Q1_ref_num'] = si_main.case.case_serial
         placement = get_placement(request, id)
+        print('Placement', placement)
         form = SIForm(form_id, data=idata)
         form_data = get_form(form_id)
         form_name = form_data['form_name']
@@ -208,6 +217,8 @@ def si_forms(request, form_id, id):
             form_id=form_id, related_to_id=None)
         cases = OVCCaseRecord.objects.filter(
             person_id=person_id, is_void=False)
+        if not case_id:
+            case_id = cases.order_by("-date_case_opened").first().case_id
         case.person = person
         case.vacancies = vacancies
         case.events = events
@@ -229,9 +240,12 @@ def si_forms(request, form_id, id):
         for f in forms:
             if forms[f] > 0:
                 ffill.append(f)
+        # Hack for the placement done using old module
+        if placement:
+            ffill.append('FMSI004F')
         all_filled = set(fdeps).issubset(ffill)
         inst_type = request.session.get('ou_type', 'XXXX')
-        print('Go live problems', inst_type, form_id)
+        print('Go live problems', inst_type, form_id, all_filled)
         A_IN = INSTM[form_id] if form_id in INSTM else []
         if inst_type not in A_IN:
             all_filled = True
@@ -269,6 +283,7 @@ def si_forms(request, form_id, id):
             context['dep_forms'] = dep_forms
             context['dep_perms'] = perms
             context['case'] = case
+            print('Not allowed ctxt', dep_forms)
             return render(request, 'si/FMSI000R.html', context)
         return render(request, 'si/%s' % tmpl, context)
 
@@ -321,6 +336,8 @@ def si_forms_edit(request, form_id, id, ev_id):
             form_id=form_id, related_to_id=None)
         cases = OVCCaseRecord.objects.filter(
             person_id=person_id, is_void=False)
+        if not case_id:
+            case_id = cases.order_by("-date_case_opened").first().case_id
         case.person = person
         case.vacancy = vacancy
         case.events = events

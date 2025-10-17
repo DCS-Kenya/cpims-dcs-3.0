@@ -41,7 +41,6 @@ urlpatterns = [
     path('accounts/request/', views.access, name='access'),
     path('accounts/terms/<int:id>/', cpovc_access.views.terms,
          name='terms'),
-    path('partners/', views.partners, name='partners'),
     path('register/', cpovc_auth.views.register, name='register'),
     path('auth/', include(auth_urls)),
     path('registry/', include(registry_urls)),

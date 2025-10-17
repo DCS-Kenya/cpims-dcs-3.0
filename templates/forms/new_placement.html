@@ -289,7 +289,27 @@
     <!-- end col-12 -->
 </div>
 <!-- end row -->
-
+<!-- Start Modal -->
+<div class="modal fade" id="si_info_details" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div style="background-color:#d9edf7" class="modal-header">
+                <button type="button" class="close " data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Statutory Insitution Placement</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <p>Using this method to do Institution placement for Statutory Insitutions has been blocked.</p>
+                    <br>
+                    <p>Kindly use the SI module from the Menus -> Forms -> Insititutions -> SI or <br>Click the button below to proceed.</p>
+                    <hr>
+                    <a href="/institutions/si/view/{{ person_id }}/"><button type="button" class="btn btn-danger">Proceed to SI</button></a>
+                    <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal -->
 {% endblock %}
 <!-- End content area -->
 
@@ -305,6 +325,11 @@ jQuery(document).ready(function()
     // get org_units a user ia attached to of org_unit_type = ['TNAS','TNSI','TNCI']
     // populate institution names with this list
     getUserOrgUnits();
+
+    {% if is_si %}
+    $('#si_info_details').modal('show');
+    //$("#new_placement :input").prop("disabled", true);
+    {% endif %}
 
     //multi selects
     $('#residential_institution_name, #transfer_from').multiselect({
@@ -500,3 +525,4 @@ function getUserOrgUnits()
 }
 </script>
 {% endblock %}
+

@@ -1486,6 +1486,9 @@ def save_geo_location(area_ids, org_unit, existing_ids=[]):
         # Delink those unselected by user
         # area_ids = map(int, area_ids)
         area_aids = [int(x) for x in existing_ids]
+        for aid in area_ids:
+            if aid not in area_aids:
+                area_aids.append(int(aid))
         delink_list = [x for x in existing_ids if x not in area_aids]
         for i, area_id in enumerate(area_aids):
             if area_id not in delink_list:

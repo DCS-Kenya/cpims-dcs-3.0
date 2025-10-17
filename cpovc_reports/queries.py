@@ -1513,30 +1513,42 @@ cen.service_provided, intv.item_description
 QUERIES['afc_summary'] = '''
 SELECT
 ROW_NUMBER () OVER (ORDER BY ovc_afc_main.timestamp_created) as SNO,
-concat(pp.first_name,' ',pp.surname,' ',pp.other_names) as Names,
+pp.id as cpims_id,
+concat(pp.first_name,' ',pp.surname,' ',pp.other_names) as child_names,
 date_part('year', age(case_date, pp.date_of_birth)) AS Age,
 CASE pp.sex_id WHEN 'SFEM' THEN 'Female' ELSE 'Male' END AS Sex,
-case_date as "case date",
 CASE
-WHEN  date_part('year', age(case_date, pp.date_of_birth)) < 6 THEN 'a.[0 - 5 yrs]'
-WHEN  date_part('year', age(case_date, pp.date_of_birth)) BETWEEN 6 AND 9 THEN 'b.[6 - 9 yrs]' 
-WHEN  date_part('year', age(case_date, pp.date_of_birth)) BETWEEN 10 AND 15 THEN 'c.[10 - 15 yrs]' 
-WHEN  date_part('year', age(case_date, pp.date_of_birth)) BETWEEN 16 AND 18 THEN 'd.[16 - 18 yrs]' 
-ELSE 'e.[18+ yrs]' END AS agerange,
-c_type.item_description as "care type",
-c_cat.item_description as "case category",
-CASE ovc_afc_main.case_status WHEN 'TRUE' THEN 'Active'
-ELSE 'Closed' END AS Status,
+WHEN  date_part('year', age(cr.date_case_opened, pp.date_of_birth)) < 6 THEN 'a.[0 - 5 yrs]'
+WHEN  date_part('year', age(cr.date_case_opened, pp.date_of_birth)) BETWEEN 6 AND 9 THEN 'b.[6 - 9 yrs]' 
+WHEN  date_part('year', age(cr.date_case_opened, pp.date_of_birth)) BETWEEN 10 AND 15 THEN 'c.[10 - 15 yrs]' 
+WHEN  date_part('year', age(cr.date_case_opened, pp.date_of_birth)) BETWEEN 16 AND 18 THEN 'd.[16 - 18 yrs]' 
+ELSE 'e.[18+ yrs]' END AS age_range,
+ou.org_unit_name as org_unit,
+cou_geo.area_name as county, scou_geo.area_name as sub_county,
+cr.date_case_opened as case_date,
+c_cat.item_description as "case_category",
+CASE 
+WHEN c_type.item_id is NULL THEN 'Pending'
+WHEN c_type.item_id = 'ICFR' THEN 'Reintegration'
+ELSE c_type.item_description END AS care_type,
+CASE WHEN case_date > '1900-01-01' THEN case_date else NULL END AS "alt_care_date",
+CASE WHEN ovc_afc_main.case_status is True THEN 'Closed'
+ELSE 'Pending' END AS Status,
 1 as ovccount
 from ovc_afc_main
 inner join reg_person as pp on person_id = pp.id
+inner join ovc_case_geo as cgeo on cgeo.case_id_id = case_id
 left outer join ovc_case_record as cr on cr.case_id = ovc_afc_main.case_id
-left outer join ovc_case_category as cc on cc.case_id_id = cr.case_id and ccat.is_void = False
+left outer join ovc_case_category as cc on cc.case_id_id = cr.case_id and cc.is_void = False
+left outer join list_geo as scou_geo on scou_geo.area_id=cgeo.report_subcounty_id and scou_geo.area_id > 47
+left outer join list_geo as cou_geo on cou_geo.area_id=scou_geo.parent_area_id and cou_geo.area_id < 48
+left outer join reg_org_unit as ou on ou.id=cgeo.report_orgunit_id
 left outer join list_general c_cat on c_cat.item_id=cc.case_category and c_cat.field_name = 'case_category_id'
 left outer join list_general c_type on c_type.item_id=ovc_afc_main.care_type and c_type.field_name = 'alternative_family_care_type_id'
-where ovc_afc_main.is_void = False and case_date between '{start_date}' and '{end_date}'
-and org_unit_id = '{org_unit}'
+where ovc_afc_main.is_void = False and cr.date_case_opened between '{start_date}' and '{end_date}' {other_params}
 '''
+# and org_unit_id = '{org_unit}'
+# case_date between '{start_date}' and '{end_date}'
 
 QUERIES['afc_forms'] = '''
 SELECT pp.id as cpims_id, event_date as Identification_date,
@@ -1740,6 +1752,6 @@ left outer join list_general trb on trb.item_id=exids.identifier and trb.field_n
 left outer join ovc_gen_registration ogr on ogr.case_id=ovc_case_record.case_id
 left outer join ovc_gen_event oge on oge.care_id=ogr.si_id
 left outer join ovc_gen_form ogf on ogf.event_id=oge.event_id and ogf.question_id = 'Q1_gen_place'
-where ccat.case_category in ('CSRG', 'CCDF', 'CTRF', 'CLFC', 'CDSA', 'CSAB', 'CSDQ', 'CHCP', 'CSTC', 'CCEA')
+where ccat.case_category in ('CCOA', 'CSRG', 'CCDF', 'CTRF', 'CLFC', 'CDSA', 'CSAB', 'CSDQ', 'CHCP', 'CSTC', 'CCEA')
 and date_case_opened between '{start_date}' and '{end_date}' {other_params};
 '''

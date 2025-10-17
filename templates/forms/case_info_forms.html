@@ -554,19 +554,27 @@
                                                 <td><span id="tscore1">0</span>/11</td>
                                                 <td><span id="tscore2">0</span>/10</td>
                                                 <td><span id="tscore3">0</span>/3</td>
-                                                <td><span id="tscore4">0</span>/1</td>
-                                                <td><span id="tfinal">0</span>/25</td>
+                                                <td><span id="tscore4">0</span>/2</td>
+                                                <td><span id="tfinal">0</span>/26</td>
                                             </tr>
                                             <tr>
-                                                <td><b>Conclusion</b></td>
+                                                <td><b>Overall Conclusion</b></td>
                                                 <td colspan="10"><span id="tsummary"></span></td>
                                             </tr>
+                                            <tr>
+                                                <td><b>Targeted Interventions</b></td>
+                                                <td colspan="10">
+                                                    1. Behavioral Indicators. <span id="a1"></span><br>
+                                                    2. Digital Footprint Indicators. <span id="a2"></span><br>
+                                                    3. Environmental Risk Factors. <span id="a3"></span><br>
+                                                    4. Disclosures / Reports. <span id="a4"></span><br>
+
+                                                </td>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-
-                            <hr>                    
+                 
                     <div class="form-group">
                         <label class="col-md-5 control-label">Date of Screening <span class="asteriskField">*</span></label>
                         <div class="col-md-3">
@@ -594,7 +602,7 @@
             <!-- begin col-12 -->
             <div class="col-md-12">
                 <!-- begin panel -->
-                <div class="panel panel-default">
+                <div class="panel panel-info">
                     <div class="panel-heading">
                         <div class="panel-heading-btn">
                             <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-expand"><i class="fa fa-expand"></i></a>
@@ -758,6 +766,7 @@ $(document).ready(function() {
         }
     });
     //$('input[type=checkbox][name=Q1_gen_platform]').prop('required', true);
+
 });
 
 // Delete Django Ajax Call
@@ -824,7 +833,7 @@ function handleScores(){
     var sec1 = ["Q1_beh", "Q2_beh", "Q3_beh", "Q4_beh", "Q5_beh", "Q6_beh", "Q7_beh", "Q8_beh", "Q9_beh", "Q10_beh", "Q11_beh"];
     var sec2 = ["Q1_df", "Q2_df", "Q3_df", "Q4_df", "Q5_df", "Q6_df", "Q7_df", "Q8_df", "Q9_df", "Q10_df"];
     var sec3 = ["Q1_ir", "Q2_ir", "Q3_ir"];
-    var sec4 = ["Q1_dis"];
+    var sec4 = ["Q1_dis", "Q2_dis"];
 
     
     $("input[type='radio']:checked").each(function() {
@@ -853,13 +862,57 @@ function handleScores(){
 
     var ts = t1 + t2 + t3 + t4;
     var tts = tt1 + tt2 + tt3 + tt4;
-    var tsum1 = "0-1 : The case requires reassessment, including section 4, question 1";
-    var tsum2 = "> 1 : High risk; child requires intervention, except section 4, question 2";
+    var tsum1 = "0-3 : Few or no concerns across areas. <br>Routine monitoring, parental guidance, online safety awareness.";
+    var tsum2 = "4-6 : Multiple concerning signs, but no disclosure.<br>Caregiver engagement, targeted psychosocial support, referral if escalation continues.";
+    var tsum3 = "7+ : Disclosure or strong evidence of exploitation / abuse.<br>Immediate intervention: child protection referral, law enforcement (if required), emergency psychosocial support.";
     var tsummary;
-    if (ts > 1){
+    if (ts < 4 && tt4 == 0){
+        tsummary = tsum1;
+    }else if (ts > 3 && ts < 7 && tt4 == 0){
         tsummary = tsum2;
     }else{
-        tsummary = tsum1;
+        tsummary = tsum3;
+    }
+    // Areas
+    var a1_1 = "0-1: Routine monitoring.";
+    var a1_2 = "2-3: Engage caregivers; discuss safe online behaviour.";
+    var a1_3 = "4+: Psychosocial support & urgent child protection follow-up";
+    // Area 2
+    var a2_1 = "0–1: Reinforce positive online habits.";
+    var a2_2 = "2–3: Digital safety education + caregiver monitoring.";
+    var a2_3 = "4+: Escalate to cybercrime / law enforcement if exploitation is evident.";
+    // Area 3
+    var a3_1 = "0: Safe/supervised environment.";
+    var a3_2 = "1: Caregiver training on supervision & controls.";
+    var a3_3 = "2–3: Home environment assessment; urgent child protection referral.";
+    // Area 4
+    var a4_1 = "0 : Monitor other domains.";
+    var a4_2 = "1+ : Treat as confirmed harm; Investigate; verify concerns, urgent intervention + law enforcement + psychosocial support.";
+    if (t1 > 3){
+        var a1_sum = a1_3;
+    }else if (t1 > 1 && t1 <= 3){
+        var a1_sum = a1_2;
+    }else{
+        var a1_sum = a1_1;
+    }
+    if (t2 > 3){
+        var a2_sum = a2_3;
+    }else if (t2 > 1 && t2 <= 3){
+        var a2_sum = a2_2;
+    }else{
+        var a2_sum = a2_1;
+    }
+    if (t3 > 1){
+        var a3_sum = a3_3;
+    }else if (t3 == 1){
+        var a3_sum = a3_2;
+    }else{
+        var a3_sum = a3_1;
+    }
+    if (t4 > 0){
+        var a4_sum = a4_2;
+    }else{
+        var a4_sum = a4_1;
     }
     console.log('TI', a1_array.length);
     //Area Scores
@@ -881,6 +934,11 @@ function handleScores(){
     $('#tscore4').html(t4);
 
     $('#tsummary').html(tsummary);
+    // Areas
+    $('#a1').html(a1_sum);
+    $('#a2').html(a2_sum);
+    $('#a3').html(a3_sum);
+    $('#a4').html(a4_sum);
 }
 </script>
 

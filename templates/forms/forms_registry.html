@@ -484,6 +484,27 @@
         </div>
     </div>
 </div>
+<!-- Start Modal -->
+<div class="modal fade" id="case_info_details" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div style="background-color:#d9edf7" class="modal-header">
+                <button type="button" class="close " data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-weight: 100; color: #696969"><strong>Online Child Exploitation and Abuse (OCEA) details case</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are there elements of Online Child Exploitation and Abuse (OCEA) in this case? </p>
+                    <br>
+                    <p>Click Yes to proceed to add more details or Close to Cancel.</p>
+                    <hr>
+                    <a href="/forms/case/7/{{ case_uid }}/"><button type="button" class="btn btn-primary">Yes, Proceed</button></a>
+                    <button  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal -->
 {% endblock %}
 <!-- End content area -->
 
@@ -506,6 +527,9 @@ $(document).ready(function()
         $('.collapse').collapse('hide');
     });
 
+    {% if is_OA %}
+    $('#case_info_details').modal('show');
+    {% endif %}
 
     $('#case-table')
         .addClass( 'nowrap' )

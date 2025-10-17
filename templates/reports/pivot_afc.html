@@ -92,6 +92,8 @@
                             {% if request.user.is_superuser or request.user.is_staff %}
                             <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_0" name="report_region" class="report_region" type="radio" value="1" checked="checked" /> National</label>
                             {% endif %}
+                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_1" name="report_region" class="report_region" type="radio" value="2" /> County</label>
+                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_2" name="report_region" class="report_region" type="radio" value="3" /> Sub-county</label>
                             <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_3" name="report_region" class="report_region" type="radio" value="4" /> Organisation Unit (CBO)</label>
                             <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_5" name="report_region" class="report_region" type="radio" value="5" /> Cluster</label>
                             <div id="type_error"></div>
@@ -224,8 +226,8 @@ jQuery(document).ready(function() {
         console.log(region);
         $('#case_load_report').parsley().validate();
            if (region == '1'){
-                $('#report_results').html('Report is not available.');
-                return false;
+                // $('#report_results').html('Report is not available.');
+                // return false;
             }
 
            if ($('#case_load_report').parsley().isValid()){
@@ -258,8 +260,8 @@ jQuery(document).ready(function() {
                         if (status == 0){
                             $("#report_html").pivotUI(data, {
                             //renderers: renderers,
-                            cols: ["AGERANGE"],
-                            rows: ["GENDER"],
+                            cols: ["SEX", "AGE_RANGE"],
+                            rows: ["CARE_TYPE"],
                             aggregators: {
                                 "Number of OVC":  function() { 
                                     return tpl.count()()
@@ -527,7 +529,7 @@ function printReport() {
       var prnt = '<center><img src="{% static 'img/logo_private.png' %}" alt="" /></center>';
       var rname = $("#id_report_type option:selected").text();
       var ryear = $("#id_report_year option:selected").text();
-      var prnt = 'DATIM Report '+ rname + ' ' + ryear;
+      var prnt = 'AFC Report '+ rname + ' ' + ryear;
       //$("#print_title").val();
 
       printContainer

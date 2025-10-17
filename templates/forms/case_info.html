@@ -193,7 +193,11 @@
                                 {% endfor %}
                             </td>
                             <td class="field">Sub Category</td>
-                            <td></td><td></td>
+                            <td>
+                                {% for subcat in case_sub_categories %}
+                                    {{ subcat.sub_category_id|gen_value:vals }}
+                                {% endfor %}
+                            </td><td></td>
                         </tr>
                         {% if tr_case %}
                         <tr class="highlight">

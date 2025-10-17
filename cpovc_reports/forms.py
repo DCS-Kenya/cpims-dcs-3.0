@@ -38,9 +38,7 @@ report_vars = (('', 'Select Report'), (1, 'Organisation Unit'),
                (8, 'Services by Domain'),
                (9, 'Institution Population (Detailed)'),
                (10, 'Trafficking in Persons (Old)'),
-               (11, 'Trafficking in Persons'),
-               (12, 'Caseload Unique'),
-               (13, 'Online Child Exploitation and Abuse (OCEA)'))
+               (11, 'Trafficking in Persons'))
 # (3, 'Case category'))
 inst_vars = (('', 'Select Type'),
              ('TNCI', 'Charitable Children Institution'),

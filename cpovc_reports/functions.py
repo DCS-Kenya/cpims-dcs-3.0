@@ -575,10 +575,10 @@ def draw_page(canvas, doc):
 
     canvas.setFont("Helvetica", 240)
     # self.setFont("Helvetica", 8)
-    canvas.setStrokeGray(0.90)
-    canvas.setFillGray(0.90)
-    # canvas.rotate(45)
-    # canvas.drawCentredString(5.5 * inch, 3.25 * inch, doc.watermark)
+    canvas.setStrokeGray(0.95)
+    canvas.setFillGray(0.95)
+    canvas.rotate(45)
+    canvas.drawCentredString(7.08 * inch, -2.5 * inch, doc.watermark)
     # logo = ImageReader('https://www.google.com/images/srpr/logo11w.png')
     # canvas.drawImage(logo, 10, 10, mask='auto')
 
@@ -714,7 +714,6 @@ def get_period(report_type='M', month='', year='', period='F'):
         params['years'] = year_name
         params['sheet'] = sheet_name
         params['label'] = report_label
-        print('BBBBBBBBBBBBBBBBBBBBBBB', params)
         return params
     except Exception as e:
         print('error getting date - %s' % (str(e)))
@@ -2159,7 +2158,6 @@ def get_variables(request):
             rvalue = request.POST.get(rval)
             if rval not in report_variables:
                 report_variables[rval] = rvalue
-
         # More parameters
         inst_cats = {}
         inst_cats["TNCI"] = "Charitable Children Institution"
@@ -2189,6 +2187,8 @@ def get_variables(request):
             cbo_id = get_cbo_cluster(cluster)
         report_variables['cbos'] = cbo_id
         # print('RVARS', report_variables)
+        if 'other_params' not in report_variables:
+            report_variables['other_params'] = ''
     except Exception as e:
         print('error creating variables - %s' % (str(e)))
         raise e
@@ -3299,6 +3299,9 @@ def get_styles():
         styles.add(ParagraphStyle(name='Right', alignment=TA_RIGHT))
         styles.add(ParagraphStyle(name='Left', alignment=TA_LEFT))
         styles.add(ParagraphStyle(
+            name='Data', alignment=TA_LEFT, fontSize=10,
+            leading=11, fontColor='#FFFFFF'))
+        styles.add(ParagraphStyle(
             name='Line_Data', alignment=TA_LEFT, fontSize=8,
             leading=11, fontColor='#FFFFFF'))
         styles.add(ParagraphStyle(
@@ -3437,7 +3440,7 @@ def write_pdf(request, response, file_name):
             dfs = pd.pivot_table(df, values='ovccount',
                                  index=['case category'],
                                  columns=['agerange', 'sex'],
-                                 aggfunc=sum,
+                                 aggfunc='sum',
                                  margins=True, margins_name='Total',
                                  fill_value=0)
             # datas = np.vstack((list(dfs), np.array(dfs))).tolist()
@@ -3465,10 +3468,7 @@ def write_pdf(request, response, file_name):
             dsize = len(dfs.columns.values)
             pvt_values = list(dfs.reset_index().columns.values)
             # titles = list(pvt_values[0]) + pvt_names
-            col_length = 0
-            for col in pvt_values:
-                col_length = len(col)
-                break
+            col_length = len(pvt_values[0]) if pvt_values else 0
             for i in range(0, col_length):
                 for col in pvt_values:
                     if i not in dcols:
@@ -3479,7 +3479,19 @@ def write_pdf(request, response, file_name):
             for fc in dcols:
                 fcls.append(dcols[fc])
             data_list = dfs.reset_index().values.tolist()
-            datas = [[''] + pvt_names] + fcls + data_list
+            # print('OCEA1', col_length, fcls)
+            data_list_new, fcls_new = [], []
+            for fcl in fcls:
+                for n, fc in enumerate(fcl):
+                    fcl[n] = Paragraph(fcl[n], styles["Line_Data"])
+                fcls_new.append(fcl)
+            dl_cnt = 0
+            for dl in data_list:
+                dl_cnt += 1
+                if dl_cnt < len(data_list):
+                    dl[0] = Paragraph(dl[0], styles["Data"])
+                data_list_new.append(dl)
+            datas = [[''] + pvt_names] + fcls_new + data_list_new
             d0 = 27.86 - (2.22 * dsize)
             cols = tuple([d0 * cm] + [2.22 * cm] * dsize)
         t1 = Table(datas, colWidths=cols)

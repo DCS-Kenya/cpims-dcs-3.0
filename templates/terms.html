@@ -41,10 +41,10 @@
                 Not registered yet? Click <a href="{% url 'access' %}" class="text-success">here</a> to request for access<br/>
                 Have account? Click <a href="{% url 'login' %}" class="text-success">here</a> to login
             </div>
-            <fieldset>
-                <legend>Partners</legend>
                 <span class="promo">
-                     <div class="row branding">                      
+                    <span class="promo">
+                    <p>
+                    <div class="row branding">                      
                       <div class="column">
                         <img src="{% static 'img/USAID-logo.png' %}" height="40" alt="USAID" >
                       </div>
@@ -55,13 +55,12 @@
                         <img src="{% static 'img/UNICEF-logo.png' %}" height="40" alt="UNICEF" >
                       </div>
                     </div>
-                    </span>                    
-                </fieldset>
-                <a href="/partners/" class="m-r-0"> <i class="fa fa-plus" aria-hidden="true"></i> More Partners </a>
-                <hr />
-                <p class="text-inverse">
-                    &copy; {% now "Y" %} Directorate of Children Services (DCS). All Rights Reserved.
-                </p>
+                    </p>
+                    </span>
+                    <hr />
+                    <p class="text-center text-inverse">
+                        &copy; {% now "Y" %} Directorate of Children Services (DCS). All Rights Reserved.
+                    </p>
     </div>
     <!-- end register-content -->
 </div>

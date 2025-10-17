@@ -130,14 +130,6 @@ def access(request):
         raise e
 
 
-def partners(request):
-    """Some default page for partners."""
-    try:
-        return render(request, 'partners.html')
-    except Exception as e:
-        raise e
-
-
 def handler_400(request, exception):
     """Some default page for Bad request error page."""
     try:

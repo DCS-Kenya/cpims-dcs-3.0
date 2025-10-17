@@ -8,7 +8,7 @@ from .parameters import SI_FORMS, SI_CODES
 from .models import (
     SIMain, SI_VacancyApp, SIEvents, SIForms, SI_Document)
 
-from cpovc_forms.models import OVCPlacement
+from cpovc_forms.models import OVCPlacement, OVCDischargeFollowUp
 from cpovc_registry.models import RegOrgUnit
 
 from django.conf import settings
@@ -42,11 +42,16 @@ def save_reg(request, case_id, event_date, org_type, person_id, oid=0):
         if oid:
             org_unit_id = oid
         user_id = request.user.id
+        # Get placements
+        placement_id = None
+        placement = get_placement(request, person_id)
+        if placement:
+            placement_id = placement.pk
         obj, created = SIMain.objects.update_or_create(
             person_id=person_id, is_void=False,
             defaults={'case_date': event_date, 'org_type': org_type,
                       'org_unit_id': org_unit_id, 'created_by_id': user_id,
-                      'case_id': case_id
+                      'case_id': case_id, 'placement_id' : placement_id,
                       },
         )
     except Exception as e:
@@ -80,6 +85,7 @@ def save_form(request, form_id, person_id, edit_id=1):
     try:
         fms = {}
         org_type = 'XXXX'
+        now = timezone.now()
         user_id = request.user.id
         ev_date = request.POST.get('event_date')
         all_answers = request.POST.get('all_answers', '{}')
@@ -87,11 +93,13 @@ def save_form(request, form_id, person_id, edit_id=1):
         print('JSONS', si_datas)
         print("POST", request.POST)
         event_date = convert_date(ev_date) if ev_date else timezone.now()
-        case_id = request.POST.get('case_id', None)
-        print('Final Check', form_id, person_id, case_id)
-        if form_id == 'FMSI005F':
+        cid = request.POST.get('case_id', None)
+        case_id = cid
+        print('Final Check', form_id, person_id, case_id, event_date, org_type, person_id)
+        if form_id == 'FMSI005F' or not cid:
             case_id = request.POST.get('case_record_id')
         si_obj = save_reg(request, case_id, event_date, org_type, person_id)
+        print('Final Check - OBJ', si_obj)
         questions = ListQuestions.objects.filter(
             form__form_guid=form_id, is_void=False)
         for fm in questions:
@@ -263,12 +271,31 @@ def save_form(request, form_id, person_id, edit_id=1):
         # Handle Discharge in case of Release or Escape
         if form_id == 'FMSI021F' or form_id == 'FMSI019F':
             print('Process exit', request.POST)
+            print('si object', si_obj.placement)
             if si_obj.placement:
                 placement_id = si_obj.placement.pk
                 if placement_id:
                     pl = OVCPlacement.objects.get(pk=placement_id)
                     pl.is_active = False
                     pl.save(update_fields=['is_active'])
+
+                    # Also discharge in follow up
+                    disc_type = get_data(request, 'Q1_exit_reason')
+                    disc_reason = 'SI Release'
+                    # Also
+                    obj, created = OVCDischargeFollowUp.objects.update_or_create(
+                         placement_id_id=placement_id,
+                         person_id=person_id, is_void=False,
+                         defaults={'type_of_discharge' : disc_type,
+                                   'discharge_destination' : None,
+                                   'date_of_discharge' : event_date,
+                                   'reason_of_discharge' : disc_reason,
+                                   'expected_return_date' : None,
+                                   'actual_return_date' : None,
+                                   'discharge_comments' : disc_reason,
+                                   'created_by' : user_id,
+                                   'timestamp_created' : now
+                                   })
     except Exception as e:
         print("Error saving / editing SI forms - %s" % str(e))
         raise e
