@@ -414,11 +414,9 @@ def write_document(response, file_name, params={}):
         # col_size = len(df.columns)
         # dt_size = len(df.index)
         # Handle headers
-        address = '<b>MINISTRY OF PUBLIC SERVICE, GENDER, SENIOR CITIZENS'
-        address += " AFFAIRS & SPECIAL PROGRAMMES"
-        address += "<br />STATE DEPARTMENT FOR SOCIAL PROTECTION,"
-        address += " SENIOR CITIZENS AFFAIRS & SPECIAL PROGRAMMES"
-        address += "<br />DIRECTORATE OF CHILDREN'S SERVICES</b>"
+        address = "<b>%s" % settings.DCS['MINISTRY']
+        address += "<br />%s" % settings.DCS['STATE_DEPT']
+        address += "<br />%s</b>" % settings.DCS['NAME']
         report_number = '%s\n%s CPIMS Report\n%s' % (url, report_name, tarehe)
         # Work on the data
         start_date = ''

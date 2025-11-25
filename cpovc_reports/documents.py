@@ -1000,7 +1000,7 @@ def generate_form(request, response, doc_id, case):
         # Case details
         case_datas = OVCCaseCategory.objects.filter(case_id_id=case_id)
         for case_data in case_datas:
-            case_date = str(case_data.date_of_event.strftime('%d %b, %Y'))
+            # case_date = str(case_data.date_of_event.strftime('%d %b, %Y'))
             case_place = param_val(case_data.place_of_event, vals)
             case_category = param_val(case_data.case_category, vals)
             case_nature = case_data.case_nature
@@ -1034,8 +1034,7 @@ def generate_form(request, response, doc_id, case):
                     'sub_county': sub_county, 'sex': ovc_sex,
                     'institution': org_unit, 'case_serial': case_serial,
                     'phy_cond': phy_cond, 'mental_cond': mental_cond,
-                    'other_cond': other_cond,
-                    'bcert': bcert, 'case_date': case_date,
+                    'other_cond': other_cond, 'bcert': bcert,
                     'case_place': case_place, 'hes_status': hes_status,
                     'perpetrator': perpetrator.capitalize(),
                     'perpetrator_relation': perpetrator_relation,

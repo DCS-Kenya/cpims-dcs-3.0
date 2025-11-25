@@ -151,6 +151,8 @@ def SI_child_view(request, id):
                 fmk += forms[fm]
         if user_level == 1 and fmk < 3:
             is_allowed = True
+        if user_level == 1 and 'FMSI033R' not in forms:
+            is_allowed = True
         check_fields = ['sex_id', 'si_unit_type_id', 'case_category_id',
                         'cci_unit_type_id']
         vals = get_dict(field_name=check_fields)
