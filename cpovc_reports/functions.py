@@ -3456,7 +3456,7 @@ def write_pdf(request, response, file_name):
         if rid == 5:
             cols = tuple([None] * (col_size - 1) + [3 * cm])
             dfs = pd.pivot_table(df, values='ovccount',
-                                 index=['case category'],
+                                 index=['case_category'],
                                  columns=['agerange', 'sex'],
                                  aggfunc='sum',
                                  margins=True, margins_name='Total',
