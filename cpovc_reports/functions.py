@@ -3518,7 +3518,7 @@ def write_pdf(request, response, file_name):
         # Write the document
         doc = SimpleDocTemplate(
             response, pagesize=A4, rightMargin=20,
-            leftMargin=20, topMargin=30, bottomMargin=32,
+            leftMargin=20, topMargin=30, bottomMargin=40,
             keywords="CPIMS, Child Protection in Kenya, UNICEF, DCS, <!NMA!>")
         if rid in [1, 3, 4, 5]:
             doc.pagesize = landscape(A4)
