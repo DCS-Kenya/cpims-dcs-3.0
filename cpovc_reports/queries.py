@@ -1551,7 +1551,7 @@ where ovc_afc_main.is_void = False and cr.date_case_opened between '{start_date}
 # case_date between '{start_date}' and '{end_date}'
 
 QUERIES['afc_forms'] = '''
-SELECT pp.id as cpims_id, event_date as Identification_date,
+SELECT pp.id as cpims_id, event_date as identification_date,
 CASE pp.sex_id WHEN 'SFEM' THEN 'Female' ELSE 'Male' END AS Sex,
 date_part('year', age(event_date, pp.date_of_birth)) AS Age,
 CASE
@@ -1560,6 +1560,8 @@ WHEN  date_part('year', age(event_date, pp.date_of_birth)) BETWEEN 6 AND 9 THEN 
 WHEN  date_part('year', age(event_date, pp.date_of_birth)) BETWEEN 10 AND 15 THEN 'c.[10 - 15 yrs]' 
 WHEN  date_part('year', age(event_date, pp.date_of_birth)) BETWEEN 16 AND 18 THEN 'd.[16 - 18 yrs]' 
 ELSE 'e.[18+ yrs]' END AS agerange,
+ou.org_unit_name as org_unit,
+cou_geo.area_name as county, scou_geo.area_name as sub_county,
 oaf.question_id,
 CASE
 WHEN oaf.item_value = 'QTXT' THEN oaf.item_detail
@@ -1570,7 +1572,11 @@ FROM ovc_afc_event as oae
 inner join reg_person as pp on oae.person_id = pp.id
 inner join ovc_afc_form as oaf on oae.event_id = oaf.event_id
 left outer join list_general itd on itd.item_id = oaf.item_value
-where oae.form_id = '%s' and event_date between '{start_date}' and '{end_date}'
+inner join ovc_case_geo as cgeo on cgeo.case_id_id = oae.case_id
+left outer join list_geo as scou_geo on scou_geo.area_id=cgeo.report_subcounty_id and scou_geo.area_id > 47
+left outer join list_geo as cou_geo on cou_geo.area_id=scou_geo.parent_area_id and cou_geo.area_id < 48
+left outer join reg_org_unit as ou on ou.id=cgeo.report_orgunit_id
+where oae.form_id = '%s' and event_date between '{start_date}' and '{end_date}'  {other_params}
 '''
 
 QUERIES['afc_identification'] = QUERIES['afc_forms'] % ('1A')

@@ -2187,6 +2187,23 @@ def get_variables(request):
             cbo_id = get_cbo_cluster(cluster)
         report_variables['cbos'] = cbo_id
         # print('RVARS', report_variables)
+        if rpt_ovc == 7:
+            report_region = report_variables['report_region']
+            if report_region in [2, 3, 6]:
+                pms = report_variables['sub_county_id']
+                sc_list = [str(o_list) for o_list in pms]
+                sc_ids = ','.join(sc_list)
+                qs = 'AND cgeo.report_subcounty_id IN (%s)' % sc_ids
+                report_variables['other_params'] = qs
+            if report_region == 4:
+                org_unit_id = int(report_variables['org_unit'])
+                qs = 'AND cgeo.report_orgunit_id = %s' % (org_unit_id)
+                report_variables['other_params'] = qs
+            if report_variables['cluster'] != '0' and report_variables['cbos']:
+                cbo_ids = report_variables['cbos']
+                qs = 'AND cgeo.report_orgunit_id IN (%s)' % cbo_ids
+                report_variables['other_params'] = qs
+                report_variables['org_unit'] = cbo_idsreport_variables
         if 'other_params' not in report_variables:
             report_variables['other_params'] = ''
     except Exception as e:
@@ -2901,6 +2918,7 @@ def get_sql_data(request, params):
     params['cbos'] = cbo_id
     df_rpt = REPORTS[1]
     qname = REPORTS[rpt_ovc] if rpt_ovc in REPORTS else df_rpt
+    print("params", params)
     if rpt_ovc == 7:
         qid = 'AFC_%s' % (rpt_id)
         qname = REPORTS[qid] if qid in REPORTS else df_rpt
