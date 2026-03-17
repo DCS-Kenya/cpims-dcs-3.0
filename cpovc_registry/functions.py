@@ -2187,8 +2187,8 @@ def person_api_data(request):
         # Get Protection cases summary
         results = OVCCaseRecord.objects.select_related().filter(
             person_id=person_id)
-        result, cases, case_ids, geos, cats = {}, [], [], {}, {}
-        pls = []
+        result, case_ids, geos, cats = {}, [], {}, {}
+        pls, cases, pgms = [], [], []
         # Case Geo details for the case
         for res in results:
             case_ids.append(res.case_id)
@@ -2200,7 +2200,7 @@ def person_api_data(request):
         vals = get_dict(field_name=['case_category_id'])
         for case_cat in case_cats:
             cats[case_cat.case_id_id] = case_cat.case_category
-        cnt, pnt = 0, 0
+        cnt, pnt, prt = 0, 0, 0
         for res in results:
             cnt += 1
             cid = str(res.case_id).replace('-', '')
@@ -2226,8 +2226,18 @@ def person_api_data(request):
                    'url': url, 'org_unit': org_unit}
             pls.append(val)
         # Get Program admission - Example OVC PEPFAR Program
+        programs = OVCRegistration.objects.filter(person_id=person_id)
+        for prg in programs:
+            prt += 1
+            url = '/ovc_care/view/%s/' % prg.id
+            org_unit = prg.child_cbo.org_unit_name
+            val = {'id': prg.id, 'serial': 'N/A',
+                   'date': prg.registration_date, 'cnt': prt,
+                   'url': url, 'org_unit': org_unit}
+            pgms.append(val)
         result['cases'] = cases
         result['placements'] = pls
+        result['programs'] = pgms
     except Exception as e:
         print(str(e))
         return {}

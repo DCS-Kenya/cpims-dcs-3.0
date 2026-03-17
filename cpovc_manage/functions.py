@@ -416,8 +416,10 @@ def create_crs(request, case, case_id):
             sub_county_id = int(case_sub_county)
             county_id = int(case_county)
         area_id = sub_county_id
+        '''
         if case.account.username != 'vurugumapper':
             return response
+        '''
         if case.case_params:
             case_params = eval(case.case_params)
             print(case_params)
@@ -489,7 +491,7 @@ def create_crs(request, case, case_id):
         if len(perpetrators) > 0:
             perps = perpetrators[0]
             perp_first_name = perps['first_name']
-            perp_other_names = perps['other_names']
+            perp_other_names = perps['other_names'] if 'other_names' in perps else ''
             perp_surname = perps['surname']
             perp_relationship = perps['relationship']
         if len(perpetrators) > 1:

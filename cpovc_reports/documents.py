@@ -165,11 +165,32 @@ def generate_crs(response, ovc_data, ovc_items):
     story.append(Spacer(0.1 * cm, .1 * cm))
     intro = 'This form to be filled whenever a child protection issue is '
     intro += 'brought before a child protection office, institution '
-    intro += ' or facility.'
+    intro += ' or facility as per Data Protection Act, 2019.'
     data1 = [[Paragraph(intro, styles["Line_Label"]), ]]
     t1 = Table(data1, colWidths=(None))
     t1.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    story.append(t1)
+    story.append(Spacer(0.1 * cm, .1 * cm))
+    # Legal obligation
+    odpc = 'Public authority, legal obligation as lawful basis for obtaining, '
+    odpc += 'processing and sharing data in the best interest of the child does apply'
+    odpc_consent = 'Consent / assent provided.'
+    data1 = [
+        [Paragraph(odpc, styles["Line_Label"]),
+         get_check(ovc_data['odpc'], 'AYES'),         
+         Paragraph(odpc_consent, styles["Line_Label"]),
+         get_check(ovc_data['odpc'], 'ANNO')]]
+
+    t1 = Table(
+      data1,
+      colWidths=(None, 0.8 * cm, 3.4 * cm, 0.5 * cm ))
+    t1.setStyle(TableStyle([
+        ('INNERGRID', (1, 0), (1, 1), 0.25, colors.black),
+        ('INNERGRID', (3, 0), (3, 1), 0.25, colors.black),
+        ('INNERGRID', (5, 0), (5, 1), 0.25, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
     ]))
     story.append(t1)
     story.append(Spacer(0.1 * cm, .1 * cm))
@@ -625,10 +646,12 @@ def generate_crs(response, ovc_data, ovc_items):
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     story.append(t1)
+    case_rmk = ovc_data['case_remarks']
+    case_rmks = 'Reffer to Narration' if len(case_rmk) > 50 else case_rmk
     data1 = [[Paragraph('<b>Case category:</b>', styles["Line_Label"]),
               Paragraph(ovc_data['case_category'], styles["Line_Data_Small"]),
               Paragraph('<b>Specific issue about the case:</b>', styles["Line_Label"]),
-              Paragraph(ovc_data['case_remarks'], styles["Line_Data_Small"])
+              Paragraph(case_rmks, styles["Line_Data_Small"])
              ]]
 
     # t1 = Table(data1, colWidths=(3 * cm, None, 4.5 * cm,))
@@ -809,7 +832,27 @@ def generate_crs(response, ovc_data, ovc_items):
         ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
-    story.append(t1) 
+    story.append(t1)
+    story.append(Spacer(0.1 * cm, .2 * cm))
+    # CASE NARRATION
+    data1 = [[Paragraph('<b>CASE NARRATION</b>', styles["Line_Title"])]]
+    t1 = Table(data1, colWidths=(None,), rowHeights = [0.5 * cm])
+    t1.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), '#a7a5a5'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    story.append(t1)
+    story.append(Spacer(0.1 * cm, .2 * cm))
+    data1 = [[Paragraph(ovc_data['case_remarks'], styles["Line_Data_Small"])]]
+    t1 = Table(data1, colWidths=(19.6 * cm), rowHeights = [1.8 * cm])
+    t1.setStyle(TableStyle([
+        ('INNERGRID', (0, 0), (1, 0), 0.25, colors.black),
+        ('INNERGRID', (0, 1), (1, 1), 0.25, colors.black),
+        ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    story.append(t1)
+    story.append(Spacer(0.1 * cm, .2 * cm))
     # FOOTER
     story.append(Spacer(0.1 * cm, .2 * cm))
     story.append(Table([[Paragraph('I DECLARE THE INFORMATION CONTAINED IN THIS '
@@ -1050,6 +1093,7 @@ def generate_form(request, response, doc_id, case):
         ovc_items = {'services': services, 'siblings': siblings}
         print(ovc_data)
         print(ovc_items)
+        ovc_data['odpc'] = 'AYES'
         generate_crs(response, ovc_data, ovc_items)
     except Exception as e:
         print('error generating document - %s' % (str(e)))

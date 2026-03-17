@@ -18,4 +18,5 @@ urlpatterns = [
     path('crs/', views.basic_crs),
     path('lookup/', views.get_settings, name='settings_lookup'),
     path('dreams/', views.dreams),
+    path('user/', views.user_account),
 ]

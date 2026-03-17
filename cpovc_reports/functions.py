@@ -3566,5 +3566,87 @@ def get_region_counties(region_id):
         return list(counties)
 
 
+def sql_to_data(request, params):
+    """Method to write data."""
+    try:
+        datas = []
+        cbo = request.POST.get('org_unit')
+        rpt_id = request.POST.get('report_region')
+        report_ovc = request.POST.get('rpt_ovc_id')
+        report_id = int(rpt_id) if rpt_id else 0
+        rpt_ovc = int(report_ovc) if report_ovc else 1
+        cluster = request.POST.get('cluster')
+        cbo_id = int(cbo) if cbo else 0
+        if report_id == 5:
+            cbo_id = get_cbo_cluster(cluster)
+        params['cbos'] = cbo_id
+        # print(params)
+        df_rpt = REPORTS[1]
+        qname = REPORTS[rpt_ovc] if rpt_ovc in REPORTS else df_rpt
+        # Override
+        if int(params['report_ovc']) in [7, 8]:
+            qname = params['report_ovc_name']
+        sql = QUERIES[qname]
+        sql = sql.format(**params)
+        filename = params['filename']
+        # Report monitoring done here
+        params['sql'] = sql
+        params['file_name'] = filename
+        print('Report monitoring', params)
+        results = sql_to_pandas(request, sql, filename)
+    except Exception as e:
+        print('Error preparing for pandas - %s' % (str(e)))
+        return {}
+    else:
+        return results
+
+
+
+def sql_to_pandas(request, sql, filename):
+    """
+    Method to handle Database connections
+    User Reporting DB for reporting but
+    Fallback to Transaction DB if any error
+    """
+    try:
+        rows = []
+        columns = []
+        counts = 0
+        zipped = False
+        db_inst = 'default'
+        dbinstance = connections[db_inst]
+        print('Query Reporting database .....')
+        with dbinstance.cursor() as cursor:
+            cursor.execute(sql)
+            print('Start query execution')
+            # DF
+            columns = [c[0].upper() for c in cursor.description]
+            df = pd.DataFrame(cursor.fetchall(), columns=columns)
+            # Investigate the dataframe to determine how to write it
+            counts = df.shape[0]
+            print('Records found and by default Generate CSV -', counts)
+            csv_file_name = "%s/csv/%s.csv" % (MEDIA_ROOT, filename)
+            df.to_csv(csv_file_name, index=False)
+            if counts > 1048500:
+                # Has exceeded Excel capacity - Zip the files
+                zipped = True
+                zip_file_name = "%s/zip/%s.zip" % (MEDIA_ROOT, filename)
+                wzip = zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED)
+                wzip.write(csv_file_name)
+                wzip.close()
+            else:
+                # Excel limit not exceeded
+                xls_file_name = "%s/xlsx/%s.xlsx" % (MEDIA_ROOT, filename)
+                # df.to_excel(xls_file_name, index=False, engine='openpyxl')
+            print('Done writing to file using pandas')
+    except Exception as e:
+        print('Defaulting to Transaction DB - %s' % (str(e)))
+        return {'counts': 0, 'file_name': '', 'zipped': False}
+    else:
+        results = {'rows': rows, 'columns': columns, 'counts': counts,
+                'file_name': filename, 'zipped': zipped, 'xlsx': False}
+        return results
+
+
 if __name__ == '__main__':
     pass

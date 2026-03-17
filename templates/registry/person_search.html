@@ -228,6 +228,7 @@
                     success: function(data){
                         var cases = data.cases;
                         var placements = data.placements;
+                        var programs = data.programs;
                         var cdt = '<tr><td colspan="5"><h4>Protection Cases</h4></td></tr>';
                         if (cases.length == 0){
                             cdt += '<tr><td colspan="5">No Protection case ever reported.</td></tr>';
@@ -249,7 +250,15 @@
                              });
                         }
                         cdt += '<tr><td colspan="5"><h4>Program enrollment</h4></td></tr>';
-                        cdt += '<tr><td colspan="5">Not enrolled in any Program</td></tr>';
+                        if (programs.length == 0){
+                            cdt += '<tr><td colspan="5">Never admitted to any institution.</td></tr>';
+                        }else{
+                            $.each(programs, function(i, record) {
+                                cdt += '<tr><td>'+ record.cnt +'</td><td>'+ record.date;
+                                cdt += '</td><td>'+ record.serial;
+                                cdt += '</td><td>'+ record.org_unit +'</td><td><a class="btn btn-sm btn-primary m-r-5" href="'+ record.url +'">View</a></td></tr>';                                
+                             });
+                        }
                         //$('#chistory tr:last').after(cdt);
                         $('#chistory > tbody').html(cdt);
                     },

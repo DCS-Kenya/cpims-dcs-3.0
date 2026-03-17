@@ -12,9 +12,13 @@ def send_message(message):
         url = '%s%s' % (base_url, end_point)
         data = {'chat_id': SCHAT_ID, 'text': message}
         response = requests.post(url, data).json()
-        # print('Response', response)
+        print('Response', response)
     except Exception as e:
         error = {"message": "error sending to telegram - " % (str(e))}
         return error
     else:
         return response
+
+
+if __name__ == '__main__':
+    send_message("This is test")

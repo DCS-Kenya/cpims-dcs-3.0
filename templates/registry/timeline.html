@@ -6,7 +6,23 @@
 {% load app_filters %}
 
 {% block style_code %}
-    <link href="{% static 'plugins/datatables/css/data-table.css' %}" rel="stylesheet" />
+<link href="{% static 'plugins/datatables/css/data-table.css' %}" rel="stylesheet" />
+<style type="text/css">
+.highcharts-strong {
+    font-weight: bold;
+}
+
+.highcharts-figure {
+    min-width: 320px;
+    max-width: 600px;
+    margin: 1em auto;
+}
+
+.highcharts-description {
+    margin: 0.3rem 10px;
+}
+
+</style>
 {% endblock %}
     
 {% block primary %}
@@ -51,8 +67,8 @@
 
 
 {% block lazy_javascript_code %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/timeline.js"></script>
+<script src="{% static 'plugins/highcharts/highcharts.js' %}"></script>
+<script src="{% static 'plugins/highcharts/modules/timeline.js' %}"></script>
 <script>
     $(document).ready(function() {       
 
@@ -79,10 +95,10 @@
             enabled: false
         },
         title: {
-            text: 'Timeline of Child Registrations and services'
+            text: ''
         },
         subtitle: {
-            text: 'Registrations and services provided at any point'
+            text: ''
         },
         tooltip: {
             style: {
@@ -99,12 +115,12 @@
                 symbol: 'circle'
             },
             data: [{
-                x: Date.UTC(2019, 9, 1),
+                x: '2020-01-01',
                 name: 'Registration',
                 label: 'Registration',
                 description: "Test."
             }, {
-                x: Date.UTC(2019, 9, 5),
+                x: '2025-01-01',
                 name: 'First Summon',
                 label: 'First Summon',
                 description: "Test."

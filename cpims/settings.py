@@ -29,7 +29,7 @@ SECRET_KEY = 'f1&qcqi&cfbt)yfz0hco)^4qlenw7(kd1j#i18jpkta(oj8)if'
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = ['childprotection.go.ke', 'www.childprotection.go.ke']
+ALLOWED_HOSTS = ['childprotection.go.ke', 'www.childprotection.go.ke', 'localhost']
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -43,7 +43,7 @@ cpims_db_port = env('CPIMS_PORT')
 cpims_db_user = env('CPIMS_DBUSER')
 
 # DEBUG = env('CPIMS_DEBUG')
-DEBUG = False
+DEBUG = True
 
 
 # Application definition
@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap3',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -199,10 +200,10 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 AXES_LOCKOUT_TEMPLATE = 'locked.html'

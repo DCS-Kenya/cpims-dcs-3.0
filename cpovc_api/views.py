@@ -1,5 +1,6 @@
 import uuid
 from decimal import Decimal
+from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, generics, status
@@ -314,16 +315,20 @@ def basic_mobi_crs(request):
 def save_person(case_id, person_type, req_data):
     try:
         if person_type == 'PTCH':
+            sname = req_data.get('child_surname')
+            onames = req_data.get('child_other_names')
             data = {'first_name': req_data.get('child_first_name')}
-            data['surname'] = req_data.get('child_surname')
-            data['other_names'] = req_data.get('child_other_names')
+            data['surname'] = sname
+            data['other_names'] = onames if onames else sname
             data['dob'] = req_data.get('child_dob')
             data['sex'] = req_data.get('child_sex')
             data['relationship'] = 'TBVC'
         elif person_type == 'PTRD':
+            rsname = req_data.get('reporter_surname')
+            ronames = req_data.get('reporter_other_names')
             data = {'first_name': req_data.get('reporter_first_name')}
-            data['surname'] = req_data.get('reporter_surname')
-            data['other_names'] = req_data.get('reporter_other_names')
+            data['surname'] = rsname
+            data['other_names'] = ronames if ronames else rsname
             data['dob'] = req_data.get('reporter_dob')
             data['sex'] = req_data.get('reporter_sex')
             data['relationship'] = req_data.get('relation')
@@ -418,5 +423,69 @@ def dreams(request):
     except Exception as e:
         msg = 'Error getting OVC details - %s' % (str(e))
         return Response({'details': msg})
+    else:
+        return Response(results)
+
+
+@api_view(['GET', 'POST'])
+def user_account(request):
+    try:
+        results = {'status': 0, 'message': 'Does not exist'}
+        if request.method == 'GET':
+            # account_id = request.user.id
+            print(request.query_params)
+            cpims_id = request.query_params.get('person_id')
+            username = request.query_params.get('username')
+            if username and cpims_id:
+                user = AppUser.objects.filter(username=username)
+                if user.exists():
+                    results = {'status': 1, 'message': 'Existing username'}
+                else:
+                    regp = AppUser.objects.filter(reg_person_id=cpims_id)
+                    if regp.exists():
+                        results = {'status': 2, 'message': 'Existing account'}
+            else:
+                results = {'status': 3, 'message': 'Missing Params'}
+        if request.method == 'POST':
+            cpims_id = request.data.get('person_id')
+            username = request.data.get('username')
+            password = request.data.get('password').strip()
+            action_id = int(request.data.get('action_id', 0))
+            if action_id == 0:
+                if username and cpims_id and password:
+                    user = AppUser.objects.create_user(
+                        username=username, reg_person=cpims_id,
+                        password=password)
+                    results = {'status': 4, 'message': 'Success', 'user_id': user.id}
+                else:
+                    results = {'status': 5, 'message': 'Missing Params', 'user_id': 0}
+            else:
+                ts = timezone.now()
+                u = AppUser.objects.get(username=username, reg_person_id=cpims_id)
+                results = {'status': 6, 'message': 'Success', 'user_id': u.id}
+                if action_id == 1:
+                    # Activate account
+                    msg = "Account activated"
+                    u.last_login = ts
+                    u.is_active = True
+                elif action_id == 2:
+                    # Change password
+                    msg = "Password changed"
+                    u.set_password(password)
+                elif action_id == 3:
+                    # Deactivate account
+                    msg = "Account deactivated"
+                    u.is_active = False
+                elif action_id == 4:
+                    # Force password change on next login
+                    msg = "Account force password change on next login activated"
+                    u.password_changed_timestamp = None
+                results['status'] = 5 + action_id
+                results['message'] = "Success : %s" % (msg)
+                u.save()
+    except Exception as e:
+        msg = 'Error getting OVC details - %s' % (str(e))
+        print(msg)
+        return Response({'status': 9, 'message': 'Error'})
     else:
         return Response(results)

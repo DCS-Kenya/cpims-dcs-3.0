@@ -301,7 +301,7 @@ def integration_home(request):
                        'data': case_data}
             return JsonResponse(results, content_type='application/json',
                                 safe=False)
-        cases = OVCBasicCRS.objects.filter(is_void=False)
+        cases = OVCBasicCRS.objects.filter(is_void=False).order_by("-timestamp_created")
         if not request.user.is_superuser:
             if request.user.username == 'vurugumapper':
                 cases = cases.filter(account_id=user_id)

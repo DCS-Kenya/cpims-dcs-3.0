@@ -81,15 +81,31 @@ def settings_reports(request):
 def archived_reports(request, file_name):
     """Method to do pivot reports."""
     try:
-        directory = '%s/xlsx/' % (MEDIA_ROOT)
+        if file_name.endswith('.csv'):
+            ctype = "text/csv"
+            directory = '%s/csv/' % (MEDIA_ROOT)
+        elif file_name.endswith('.zip'):
+            ctype = "application/zip"
+            directory = '%s/zip/' % (MEDIA_ROOT)
+        elif file_name.endswith('.json'):
+            ctype = "application/json"
+            directory = '%s/json/' % (MEDIA_ROOT)
+        else:
+            ctype = "application/vnd.ms-excel"
+            directory = '%s/xlsx/' % (MEDIA_ROOT)
+        print('DIR', directory)
         file_path = os.path.join(directory, file_name)
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
                 response = HttpResponse(
-                    fh.read(), content_type="application/vnd.ms-excel")
+                    fh.read(), content_type=ctype)
                 response['Content-Disposition'] = 'inline; filename=' + \
                     os.path.basename(file_path)
                 return response
+        else:
+            print('File does not exist - %s' % file_path)
+            response = HttpResponse("Unsupported format", status=400)
+            return response
     except Exception as e:
         raise e
     else:

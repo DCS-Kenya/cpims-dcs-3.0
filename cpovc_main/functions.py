@@ -260,13 +260,12 @@ def get_vorg_list(org_unit_id):
         return queryset
 
 
-def get_general_list(field_names=[], item_category=False):
+def get_general_list(field_names=[], item_category=False, is_void=False):
     '''
     Get list general filtered by field_name
     '''
     try:
-        queryset = SetupList.objects.filter(is_void=False).order_by(
-            'the_order', 'id')
+        queryset = SetupList.objects.all().order_by('the_order', 'id')
         if len(field_names) > 1:
             q_filter = Q()
             for field_name in field_names:

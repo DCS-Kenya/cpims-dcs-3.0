@@ -17,6 +17,8 @@ from cpovc_registry.functions import (
     get_orgs_child, get_specific_orgs)
 from cpovc_main.models import SetupList
 
+from cpovc_forms.models import OVCCareServices
+
 
 def get_checkins(user_id):
     """Method to get all checkins."""
@@ -768,6 +770,21 @@ def limit_person_ids_orgs(request, pids):
         return []
     else:
         return pids
+
+
+def get_ovc_events(request, form_id, ovc_id):
+    """ Method to get events based of form id."""
+    try:
+        # F1A - OVCCareServices
+        events = OVCCareServices.objects.filter(
+            event__person_id=ovc_id).order_by("-event__date_of_event")
+        print('events', events)
+        # F1B - OVCCareF1B
+    except Exception as e:
+        print("Error getting event - %s" % (e))
+        return []
+    else:
+        return events
 
 
 class PersonObj(object):

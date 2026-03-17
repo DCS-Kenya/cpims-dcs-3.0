@@ -25,7 +25,8 @@ from .functions import (
     get_case_data, org_unit_tree, get_performance, get_performance_detail,
     get_pivot_data, get_pivot_ovc, get_variables, get_sql_data, write_xls,
     csvxls_data, get_cluster, edit_cluster, create_pepfar,
-    get_dashboard_summary, write_csv, write_pdf, get_region_counties)
+    get_dashboard_summary, write_csv, write_pdf,
+    get_region_counties, sql_to_data)
 
 from cpovc_registry.models import RegOrgUnit
 from cpovc_registry.functions import get_contacts, merge_two_dicts
@@ -945,28 +946,40 @@ def reports_ovc_list(request):
 def reports_rawdata(request):
     """Method to do adhoc pivot reports."""
     try:
+        user_id = request.user.id
         report_variables = get_variables(request)
+        report_name = report_variables['report_ovc_name']
         s_date = report_variables['start_date']
         e_date = report_variables['end_date']
         dates = '%s to %s' % (s_date.strftime("%d-%b-%Y"),
                               e_date.strftime("%d-%b-%Y"))
-        data = get_pivot_data(request, report_variables)
+        epoch_time = int(time.time())
+        fid_string = '%s-%s.%s' % (user_id, report_name, epoch_time)
+        report_variables['filename'] = fid_string
+        print("Transition", report_variables)
+        # data = get_pivot_data(request, report_variables)
+        data = sql_to_data(request, report_variables)
+        print("Final data", data)
         file_name = data['file_name']
-        results = data['records']
-        # write_csv(results, file_name, report_variables)
-        status = 9
-        message = "No data matching your query."
-        if len(results) > 0:
-            status = 0
-            message = "Query finished successfully."
-        data = {'file_name': file_name, 'data': results,
-                'status': status, 'message': message,
-                'dates': dates}
-        return JsonResponse(data, content_type='application/json',
+        results = data['rows']
+        counts = data['counts']
+        zipped = data['zipped']
+        status = 0 if counts > 0 else 9
+        xls_name = "%s.xlsx" % fid_string
+        csv_name = "%s.csv" % fid_string
+        fzip = "%s.zip" % fid_string if zipped else ''
+        # Output
+        message = "Query executed successfully. %s records generated." % (counts)
+        datas = {'file_name': csv_name, 'data': [], 'fzip': fzip,
+                 'status': status, 'message': message, 'xls': xls_name, 'dates': dates}
+        return JsonResponse(datas, content_type='application/json',
                             safe=False)
     except Exception as e:
         print('error getting raw data 2 - %s' % (str(e)))
-        return JsonResponse([], content_type='application/json',
+        error_msg = {}
+        error_msg['status'] = 9
+        error_msg['message'] = "ERROR - No results matching your query."
+        return JsonResponse(error_msg, content_type='application/json',
                             safe=False)
 
 

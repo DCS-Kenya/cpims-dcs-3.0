@@ -20,7 +20,7 @@ from cpovc_auth.decorators import is_allowed_ous
 from cpovc_forms.models import OVCCareEvents
 from cpovc_forms.models import OVCHivStatus
 
-from .functions import PersonObj
+from .functions import PersonObj, get_ovc_events
 
 
 @login_required(login_url='/')
@@ -611,3 +611,287 @@ def ovc_manage(request):
         results = {'message': msg}
         return JsonResponse(results, content_type='application/json',
                             safe=False)
+
+
+@login_required(login_url='/')
+@is_allowed_ous(['RGM', 'RGU', 'DSU', 'STD'])
+def ovc_prog_view(request, reg_id):
+    """Some default page for Server Errors."""
+    try:
+        aid = 0
+        reqid = request.GET.get('id', '')
+        offset = request.GET.get('offset', '')
+        limit = request.GET.get('limit', '')
+        if reqid and offset and limit:
+            aid = 2
+        if request.method == 'POST' or aid:
+            msg, chs = manage_checkins(request, aid)
+            results = {'status': 0, 'message': msg, 'checkins': chs}
+            if aid == 2:
+                results = chs
+            return JsonResponse(results, content_type='application/json',
+                                safe=False)    
+        creg = OVCRegistration.objects.get(is_void=False, id=reg_id)
+        ovc_id = creg.person_id
+        id = int(ovc_id)
+        child = RegPerson.objects.get(is_void=False, id=ovc_id)
+        days = 0
+        if not creg.is_active and creg.exit_date:
+            edate = creg.exit_date
+            tdate = date.today()
+            days = (tdate - edate).days
+        print('exit days', days)
+        allow_edit = False if days > 90 else True
+        params = {}
+        gparams = {}
+        # Get guardians
+        guardians = RegPersonsGuardians.objects.filter(
+            is_void=False, child_person_id=child.id)
+        guids = []
+        for guardian in guardians:
+            guids.append(guardian.guardian_person_id)
+        guids.append(child.id)
+        extids = RegPersonsExternalIds.objects.filter(
+            person_id__in=guids)
+        for extid in extids:
+            if extid.person_id == child.id:
+                params[extid.identifier_type_id] = extid.identifier
+            else:
+                gkey = '%s_%s' % (extid.person_id, extid.identifier_type_id)
+                gparams[gkey] = extid.identifier
+        # Health details
+        health = {}
+        if creg.hiv_status in ['HSTP', 'HHEI']:
+            health = get_health(ovc_id)
+        # School details
+        school = {}
+        if creg.school_level != 'SLNS':
+            school = get_school(ovc_id)
+        # Get house hold
+        hhold = OVCHHMembers.objects.get(
+            is_void=False, person_id=child.id)
+        # Get HH members
+        hhid = hhold.house_hold_id
+        hhmqs = OVCHHMembers.objects.filter(
+            is_void=False, house_hold_id=hhid).order_by("-hh_head")
+        hhmembers = hhmqs.exclude(person_id=child.id)
+        # Viral load
+        vload = OVCViralload.objects.filter(
+            is_void=False, person_id=ovc_id).order_by("-viral_date")[:1]
+        vl_sup, v_val, v_dt = 'Missing', None, None
+        if vload:
+            for vl in vload:
+                v_val = vl.viral_load
+                v_dt = vl.viral_date
+            vl_sup = 'YES' if not v_val or v_val < 1000 else 'NO'
+        print(v_dt)
+        # Get siblings
+        siblings = RegPersonsSiblings.objects.filter(
+            is_void=False, child_person_id=child.id)
+        # Get services
+        servs = {'FSAM': 'f1a', 'FCSI': 'fcsi', 'FHSA': 'fhva',
+                 'cpr': 'cpr', 'wba': 'wba', 'CPAR': 'CPAR', 'WBG': 'WBG',
+                 'FM1B': 'f1b'}
+        services = {'f1a': 0, 'fcsi': 0, 'fhva': 0, 'cpr': 0,
+                    'wba': 0, 'CPAR': 0, 'WBG': 0, 'f1b': 0}
+        sqs = OVCCareEvents.objects.filter(
+            Q(person_id=child.id) | Q(house_hold_id=hhid))
+        sqs = sqs.filter(is_void=False).values(
+            'event_type_id').annotate(
+                total=Count('event_type_id')).order_by('total')
+        for serv in sqs:
+            item = serv['event_type_id']
+            item_count = serv['total']
+            if item in servs:
+                item_key = servs[item]
+                services[item_key] = item_count
+        # Re-usable values
+        check_fields = ['relationship_type_id', 'school_level_id',
+                        'hiv_status_id', 'immunization_status_id',
+                        'art_status_id', 'school_type_id',
+                        'class_level_id', 'eligibility_criteria_id']
+        vals = get_dict(field_name=check_fields)
+        wellbeing_services = {}
+        wellbeing_services['wba'] = services['wba']
+        wellbeing_services['WBG'] = services['WBG']
+        child_hiv_status = creg.hiv_status
+        criterias = OVCEligibility.objects.filter(
+            is_void=False, person_id=child.id)
+        try:
+            care_giver = RegPerson.objects.get(
+                id=OVCRegistration.objects.get(person=child).caretaker_id)
+        except RegPerson.DoesNotExist:
+            care_giver = None
+            print('Caregiver does not exist for child: %s' % child.id)
+        form_details = "OVC Registration details"
+        return render(request, 'ovc/view_ovc_prog.html',
+                      {'status': 200, 'child': child, 'params': params,
+                       'child_hiv_status': child_hiv_status,
+                       'guardians': guardians, 'siblings': siblings,
+                       'vals': vals, 'hhold': hhold, 'creg': creg,
+                       'extids': gparams, 'health': health,
+                       'hhmembers': hhmembers, 'school': school,
+                       'care_giver': care_giver, 'services': services,
+                       'allow_edit': allow_edit, 'suppression': vl_sup,
+                       'criterias': criterias, 'reg_id': reg_id,
+                       'well_being_count': wellbeing_services,
+                       'form_details': form_details
+                       })
+    except Exception as e:
+        print("error with OVC viewing - %s" % (str(e)))
+        # raise e
+        msg = "Error during ovc view - Complete initial registration form"
+        messages.error(request, msg)
+        url = reverse('ovc_register', kwargs={'id': id})
+        return HttpResponseRedirect(url)
+
+
+@login_required(login_url='/')
+@is_allowed_ous(['RGM', 'RGU', 'DSU', 'STD'])
+def ovc_form_view(request, form_id, reg_id):
+    """Some default page for Server Errors."""
+    try:
+        aid = 0
+        reqid = request.GET.get('id', '')
+        offset = request.GET.get('offset', '')
+        limit = request.GET.get('limit', '')
+        fms = {}
+        fms[1] = 'Form 1A'
+        fms[2] = 'Form 1B'
+        fms[3] = 'CPARA'
+        fms[4] = 'Case Plan'
+        fms[5] = 'HIV Risk Screening'
+        fms[6] = 'HIV Management'
+        fms[7] = 'Viral Load'
+        fms[8] = 'Exits and Graduations'
+        fms[9] = 'Case Transfer'
+        fms[10] = 'Case Closure'
+        fms[11] = 'Referral Form'
+        fms[12] = 'Graduation Monitoring'
+        form_name = fms[form_id] if form_id in fms else "Registration details"
+        if reqid and offset and limit:
+            aid = 2
+        if request.method == 'POST' or aid:
+            msg, chs = manage_checkins(request, aid)
+            results = {'status': 0, 'message': msg, 'checkins': chs}
+            if aid == 2:
+                results = chs
+            return JsonResponse(results, content_type='application/json',
+                                safe=False)    
+        creg = OVCRegistration.objects.get(is_void=False, id=reg_id)
+        ovc_id = creg.person_id
+        id = int(ovc_id)
+        child = RegPerson.objects.get(is_void=False, id=ovc_id)
+        days = 0
+        if not creg.is_active and creg.exit_date:
+            edate = creg.exit_date
+            tdate = date.today()
+            days = (tdate - edate).days
+        print('exit days', days)
+        allow_edit = False if days > 90 else True
+        params = {}
+        gparams = {}
+        # Get guardians
+        guardians = RegPersonsGuardians.objects.filter(
+            is_void=False, child_person_id=child.id)
+        guids = []
+        for guardian in guardians:
+            guids.append(guardian.guardian_person_id)
+        guids.append(child.id)
+        extids = RegPersonsExternalIds.objects.filter(
+            person_id__in=guids)
+        for extid in extids:
+            if extid.person_id == child.id:
+                params[extid.identifier_type_id] = extid.identifier
+            else:
+                gkey = '%s_%s' % (extid.person_id, extid.identifier_type_id)
+                gparams[gkey] = extid.identifier
+        # Health details
+        health = {}
+        if creg.hiv_status in ['HSTP', 'HHEI']:
+            health = get_health(ovc_id)
+        # School details
+        school = {}
+        if creg.school_level != 'SLNS':
+            school = get_school(ovc_id)
+        # Get house hold
+        hhold = OVCHHMembers.objects.get(
+            is_void=False, person_id=child.id)
+        # Get HH members
+        hhid = hhold.house_hold_id
+        hhmqs = OVCHHMembers.objects.filter(
+            is_void=False, house_hold_id=hhid).order_by("-hh_head")
+        hhmembers = hhmqs.exclude(person_id=child.id)
+        # Viral load
+        vload = OVCViralload.objects.filter(
+            is_void=False, person_id=ovc_id).order_by("-viral_date")[:1]
+        vl_sup, v_val, v_dt = 'Missing', None, None
+        if vload:
+            for vl in vload:
+                v_val = vl.viral_load
+                v_dt = vl.viral_date
+            vl_sup = 'YES' if not v_val or v_val < 1000 else 'NO'
+        print(v_dt)
+        # Get siblings
+        siblings = RegPersonsSiblings.objects.filter(
+            is_void=False, child_person_id=child.id)
+        # Get services
+        servs = {'FSAM': 'f1a', 'FCSI': 'fcsi', 'FHSA': 'fhva',
+                 'cpr': 'cpr', 'wba': 'wba', 'CPAR': 'CPAR', 'WBG': 'WBG',
+                 'FM1B': 'f1b'}
+        services = {'f1a': 0, 'fcsi': 0, 'fhva': 0, 'cpr': 0,
+                    'wba': 0, 'CPAR': 0, 'WBG': 0, 'f1b': 0}
+        sqs = OVCCareEvents.objects.filter(
+            Q(person_id=child.id) | Q(house_hold_id=hhid))
+        sqs = sqs.filter(is_void=False).values(
+            'event_type_id').annotate(
+                total=Count('event_type_id')).order_by('total')
+        events = get_ovc_events(request, form_id, ovc_id)
+        for serv in sqs:
+            item = serv['event_type_id']
+            item_count = serv['total']
+            if item in servs:
+                item_key = servs[item]
+                services[item_key] = item_count
+        # Re-usable values
+        check_fields = ['relationship_type_id', 'school_level_id',
+                        'hiv_status_id', 'immunization_status_id',
+                        'art_status_id', 'school_type_id',
+                        'class_level_id', 'eligibility_criteria_id',
+                        'olmis_protection_service_id',
+                        'olmis_education_service_id',
+                        'olmis_hes_service_id',
+                        'olmis_health_service_id']
+        vals = get_dict(field_name=check_fields)
+        wellbeing_services = {}
+        wellbeing_services['wba'] = services['wba']
+        wellbeing_services['WBG'] = services['WBG']
+        child_hiv_status = creg.hiv_status
+        criterias = OVCEligibility.objects.filter(
+            is_void=False, person_id=child.id)
+        try:
+            care_giver = RegPerson.objects.get(
+                id=OVCRegistration.objects.get(person=child).caretaker_id)
+        except RegPerson.DoesNotExist:
+            care_giver = None
+            print('Caregiver does not exist for child: %s' % child.id)
+        return render(request, 'ovc/view_ovc_form.html',
+                      {'status': 200, 'child': child, 'params': params,
+                       'child_hiv_status': child_hiv_status,
+                       'guardians': guardians, 'siblings': siblings,
+                       'vals': vals, 'hhold': hhold, 'creg': creg,
+                       'extids': gparams, 'health': health,
+                       'hhmembers': hhmembers, 'school': school,
+                       'care_giver': care_giver, 'services': services,
+                       'allow_edit': allow_edit, 'suppression': vl_sup,
+                       'criterias': criterias, 'reg_id': reg_id,
+                       'well_being_count': wellbeing_services,
+                       'form_name': form_name, 'events': events
+                       })
+    except Exception as e:
+        print("error with OVC viewing - %s" % (str(e)))
+        # raise e
+        msg = "Error during ovc view - Complete initial registration form"
+        messages.error(request, msg)
+        url = reverse('ovc_register', kwargs={'id': id})
+        return HttpResponseRedirect(url)

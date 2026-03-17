@@ -11,4 +11,7 @@ urlpatterns = [
     path('ovc/manage/', views.ovc_manage, name='ovc_manage'),
     path('hh/view/<uuid:hhid>/', views.hh_manage, name='hh_manage'),
     path('hh/edit/<uuid:hhid>/<int:id>/', views.hh_edit, name='hh_edit'),
+    # DCS Access
+    path('view/<uuid:reg_id>/', views.ovc_prog_view, name='ovc_prog_view'),
+    path('view/<int:form_id>/<uuid:reg_id>/', views.ovc_form_view, name='ovc_form_view'),
 ]

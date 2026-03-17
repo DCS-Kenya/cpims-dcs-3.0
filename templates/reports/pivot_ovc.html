@@ -7,17 +7,11 @@
 {% load static %}
 
 {% block style_code%}
-<link rel="stylesheet" type="text/css" href="{% static 'plugins/pivot-table/dist/pivot.css' %}">
+<link href="{% static 'plugins/pivot-table/dist/pivot.css' %}" rel="stylesheet" >
 <link href="{% static 'plugins/bootstrap-datepicker/css/datepicker3.css' %}" rel="stylesheet" />
 <style type="text/css">
     table.pvtUi {
         width: 100%;
-    }
-    .colTotal, .pvtTotals, .pvtGrandTotal {
-        display: none;
-    }
-    table.pvtTable tbody tr th.pvtTotalLabel {
-        display: none;
     }
 </style>
 {% endblock style_code%}
@@ -53,28 +47,6 @@
             <div class="panel-heading">
                 <div class="panel-heading-btn">
                     <a href="#" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
-                </div>
-                <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-success btn-xs">Jump to</button>
-                    <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="{% url 'pivot_ovc_reports' %}">DATIM</a></li>
-                        <li><a href="{% url 'pivot_ovc_pepfar' %}">Services by Domain (PEPFAR Summary)</a></li>
-                        <li class="divider"></li>
-                        <li><a href="{% url 'pivot_ovc_kpi' %}">Key Performance Indicator</a></li>
-                        <li><a href="{% url 'reports_ovc' id=1 %}">Registration List</a></li>
-                        <li><a href="{% url 'reports_ovc' id=2 %}">Registration by HH</a></li>
-                        <li><a href="{% url 'reports_ovc' id=3 %}">CSI</a></li>
-                        <li><a href="{% url 'reports_ovc' id=4 %}">CHV monthly RR</a></li>
-                        <li><a href="{% url 'reports_ovc' id=5 %}">List of OVC not served</a></li>
-                        <li><a href="{% url 'reports_ovc' id=6 %}">PEPFAR detailed summary</a></li>
-                        <li><a href="{% url 'reports_ovc' id=7 %}">Registration by CHV</a></li>
-                        <li><a href="{% url 'reports_ovc' id=8 %}">Beneficiary list</a></li>
-                        <li><a href="{% url 'reports_ovc' id=9 %}">Form1a summary</a></li>
-                        <li><a href="{% url 'reports_ovc' id=10 %}">Needs vs Served by domain</a></li>
-                    </ul>
                 </div>                        
                 <h4 class="panel-title">Report details and parameters</h4>
             </div>
@@ -86,8 +58,9 @@
                         <label class="control-label col-md-4 col-sm-4">Report Region :</label>
                         <div class="col-md-6 col-sm-6">
                             <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_0" name="report_region" class="report_region" type="radio" value="1" checked="checked" /> National</label>
-                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_3" name="report_region" class="report_region" type="radio" value="4" /> Organisation Unit (CBO)</label>
-                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_5" name="report_region" class="report_region" type="radio" value="5" /> Cluster</label>
+                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_1" name="report_region" class="report_region" type="radio" value="2" /> County</label>
+                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_2" name="report_region" class="report_region" type="radio" value="3" /> Sub-county</label>
+                            <label><input data-parsley-required="true" data-parsley-errors-container="#type_error" id="report_type_3" name="report_region" class="report_region" type="radio" value="4" /> Organisation Unit</label>
                             <div id="type_error"></div>
                         </div>
                         <a href="#" data-toggle="tooltip" title="Select report type."><i class="fa fa-info-circle fa-lg"></i></a>
@@ -115,17 +88,10 @@
                         </div>
                         <a href="#" data-toggle="tooltip" title="Select Organisation Unit."><i class="fa fa-info-circle fa-lg"></i></a>
                     </div>
-                    <div class="form-group" id="report_cluster">
-                        <label class="control-label col-md-4 col-sm-4">Cluster :</label>
-                        <div class="col-md-6 col-sm-6">
-                            {{ form.cluster }}
-                        </div>
-                        <a href="#" data-toggle="tooltip" title="Select your preset cluster."><i class="fa fa-info-circle fa-lg"></i></a>
-                    </div>
                     <div class="form-group">
                         <label class="control-label col-md-4 col-sm-4">Reporting period :</label>
                         <div class="col-md-2 col-sm-2">
-                            {{ form.report_type_other }}
+                           {{ form.report_type_others }}
                         </div>
                         <div class="col-md-2 col-sm-2">
                         {{ form.report_period }}
@@ -146,27 +112,36 @@
                         <div class="col-md-2 col-sm-2"> -
                         </div>
                         <a href="#" data-toggle="tooltip" title="Select report type."><i class="fa fa-info-circle fa-lg"></i></a>
-                    </div>       
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4 col-sm-4">Generate Excel File :</label>
+                        <div class="col-md-6 col-sm-6">
+                        <label><input data-parsley-required="true" data-parsley-errors-container="#excel_error" id="report_excel_1" name="report_excel" class="report_excel" type="radio" value="1" /> Yes</label>
+                        <label><input data-parsley-required="true" data-parsley-errors-container="#excel_error" id="report_excel_0" name="report_excel" class="report_excel" type="radio" value="0" checked="checked" /> No</label>
+                        <div id="excel_error"></div>
+                        </div>
+                        <a href="#" data-toggle="tooltip" title="Without Excel will take seconds"><i class="fa fa-info-circle fa-lg"></i></a>
+                    </div>
+				
                     <div class="panel-body panel-form">
-                        <div class="form-group">
+                        <div style="margin: 10px;">
                             <label class="control-label col-md-4 col-sm-4"></label>
                             <div class="col-md-6 col-sm-6">
                                 <button type="submit" class="btn btn-sm btn-primary m-r-5"><i class="fa fa-check-square-o"></i> View </button>
                                 <button type="button" id="map-print" class="btn btn-sm btn-danger m-r-5" onclick="printChart()"><i class="fa fa-print"></i> Print Report</button>
-                                <button type="button" id="rpt-download" class="btn btn-sm btn-primary m-r-5"><i class="fa fa-download"></i> Download</button>
-                                <input type="hidden" name="rpt_id" id="rpt_id">
-                                <input type="hidden" name="rpt_ovc_id" id="rpt_ovc_id" value="{{ report_id }}">
+                                <span  id="other_reports"></span>
+                                <span  id="pdates"></span>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
+                    <input type="hidden" name="rpt_ovc_id" id="rpt_ovc_id" value="{{ report_id }}">
+				</form>
+			</div>
         </div>
         <!-- end panel -->
         <center><div id="report_results"></div></center>
         <br/>
         <div id="report_html"><div id="report_vhtml"></div></div>
-        <div id="output"></div>
         
         
     </div>
@@ -198,6 +173,7 @@ jQuery(document).ready(function() {
         nonSelectedText: 'Please select sub-county',
         buttonClass: 'btn btn-white'
     });
+    
     $('#from_date, #to_date').datepicker({
         dateFormat: 'yy-mm-dd', format: 'dd-M-yyyy',
         endDate: '+0d', enddate: '+0d', autoclose: true
@@ -211,74 +187,73 @@ jQuery(document).ready(function() {
         event.preventDefault();
         $('#report_results').html("Processing Report...");
         $('#report_vhtml').empty();
-        $("#report_html").empty();
         var oname = $("#id_org_unit option:selected").text();
-        var ovc = $("#id_report_ovc").val();
-        var region = $('input[name=report_region]:checked').val();
-        console.log(region);
-        $('#case_load_report').parsley().validate();
-           if (region == '1'){
-                $('#report_results').html('Report is not available.');
-                return false;
-            }
+        $.ajax({
+            url : "{% url 'pivot_rawdata' %}",
+            type : "POST",
+            dataType: "json",
+            data: $("#case_load_report").serialize() + "&org_unit_name="+oname,
+            // handle a successful response
+            success : function(response) {
+                var data = response.data;
+                var file_name = response.file_name;
+                var status = response.status;
+                var pdates = response.dates;
+                var message = response.message;
+                var tpl = $.pivotUtilities.aggregatorTemplates;
+                var numberFormat = $.pivotUtilities.numberFormat;
+                var intFormat = numberFormat({digitsAfterDecimal: 0});
+                $("#rpt_id").val(file_name);
 
-           if ($('#case_load_report').parsley().isValid()){
-                $('#report_results').html("Processing Report...");
-                $('#report_vhtml').empty();
-                $("#report_html").empty();
-                var oname = $("#id_org_unit option:selected").text();
-                var ovc = $("#id_report_ovc").val();
-                $.ajax({
-                    url : "{% url 'pivot_ovc_rawdata' %}",
-                    type : "POST",
-                    dataType: "json",
-                    data: $("#case_load_report").serialize() + "&org_unit_name="+oname,
-                    // handle a successful response
-                    success : function(response) {
-                        var data = response.data;
-                        var file_name = response.file_name;
-                        var status = response.status;
-                        var message = response.message;
-                        var tpl = $.pivotUtilities.aggregatorTemplates;
-                        var numberFormat = $.pivotUtilities.numberFormat;
-                        var intFormat = numberFormat({digitsAfterDecimal: 0});
-                        $("#rpt_id").val(file_name);
-
-                        var renderers = $.extend(
-                            $.pivotUtilities.renderers,
-                            $.pivotUtilities.d3_renderers
-                            );
-                        $("#report_html").pivotUI(data, {
-                            //renderers: renderers,
-                            cols: ["AGERANGE"],
-                            rows: ["GENDER"],
-                            aggregators: {
-                                "Number of OVC":  function() { 
-                                    return tpl.count()()
-                                },
-                                "Sum of OVC":  function() { 
-                                    return tpl.sum(intFormat)(["OVCCOUNT"]) 
-                                }
+                var renderers = $.extend(
+                    $.pivotUtilities.renderers,
+                    $.pivotUtilities.d3_renderers
+                    );
+                var url = '<a href="{% url "archived_reports" file_name="0000" %}"';
+                var xlsm = url.replace('0000', file_name);
+                xlsm += 'class="btn btn-sm btn-danger active m-r-5">';
+                xlsm += '<i class="fa fa-file-excel-o"></i> Excel</a>';
+                ages = ['0 - 5 yrs', '6 - 10 yrs', '11 - 15 yrs',
+                        '16 - 17 yrs', '18+ yrs'];
+                $('#pdates').html(pdates);
+                if (status == 0){
+                    if (file_name == ''){
+                        $('#other_reports').html('');
+                    }else{
+                        $('#other_reports').html(xlsm);
+                    }                    
+                    $("#report_html").pivotUI(data, {
+                        //renderers: renderers,
+                        cols: ["AGERANGE", "SEX"], rows: ["COUNTY", "CBO"],
+                        rowOrder: "value_a_to_z",
+                        aggregators: {
+                            "Number of OVC":  function() { 
+                                return tpl.count()()
                             },
-                            rendererName: "Table"
-                        }, true);
-                        //
-                        $('#report_results').html("");
-                        $('#map-print, #rpt-download').show();
-         
-                    },
-                    // handle a non-successful response
-                    error : function(xhr, errmsg, err) {
-                        msg = errmsg + '. Check if you are still logged in.'
-                        $('#report_results').html("Oops! We have encountered an error: " + errmsg);
-                        console.log(xhr.status + ": " + xhr.responseText);
-                    }
-                });
-            }else{
-                $('#report_results').html('Please provide missing details.');
-                return false;
+                            "Sum of OVC":  function() { 
+                                return tpl.sum(intFormat)(["OVCCount"]) 
+                            }
+                        },
+                        rendererName: "Table"
+                    });
+                    //
+                    $('#report_results').html("");
+                    $('#map-print').show();
+                }else{
+                    $('#report_results').html(message);
+                    $('#map-print').hide();
+                } 
+ 
+            },
+            // handle a non-successful response
+            error : function(xhr, errmsg, err) {
+                msg = errmsg + '. Check if you are still logged in.'
+                $('#report_results').html("Oops! We have encountered an error: " + errmsg);
+                console.log(xhr.status + ": " + xhr.responseText);
             }
         });
+    });
+    
     // Hide some stuff by default
     $("#report_type_0").prop("checked", true);
     $('#report_county').hide();
@@ -286,29 +261,20 @@ jQuery(document).ready(function() {
     $('#report_sub_county').hide();
     $('#sub_county').attr('data-parsley-required', 'false');
     $('#report_reg_unit').hide();
-    $('#report_cluster').hide();
 
-    $("#rpt-download").click(function(e) {
-        var f = $('#rpt_id').val();
-        var url = "{% url 'ovc_download' %}?f="+f;
-        window.location.href = url;
-    });
     
     $(".report_region").click(function(e) {
         var res = $('input[name=report_region]:checked', '#case_load_report').val();
         if (res == '1'){
-            $('#report_cluster').hide();
-            $('#id_cluster').attr('data-parsley-required', 'false');
             $('#report_reg_unit').hide();
             $('#id_org_unit').attr('data-parsley-required', 'false');
             $('#id_org_unit').val('');
             $('#report_county').hide();
             $('#county').attr('data-parsley-required', 'false');
+
             $('#report_sub_county').hide();
             $('#sub_county').attr('data-parsley-required', 'false');
         }else if (res == '2'){
-            $('#report_cluster').hide();
-            $('#id_cluster').attr('data-parsley-required', 'false');
             $('#report_reg_unit').hide();
             $('#id_org_unit').attr('data-parsley-required', 'false');
             $('#id_org_unit').val('');
@@ -316,11 +282,10 @@ jQuery(document).ready(function() {
             $('#county').attr('data-parsley-required', 'true');
             $('#county').val('');
             $('#county').multiselect('rebuild');
+
             $('#report_sub_county').hide();
             $('#sub_county').attr('data-parsley-required', 'false');
         }else if (res == '3'){
-            $('#report_cluster').hide();
-            $('#id_cluster').attr('data-parsley-required', 'false');
             $('#report_reg_unit').hide();
             $('#id_org_unit').attr('data-parsley-required', 'false');
             $('#id_org_unit').val('');
@@ -328,26 +293,18 @@ jQuery(document).ready(function() {
             $('#county').attr('data-parsley-required', 'true');
             $('#county').val('');
             $('#county').multiselect('rebuild');
+
             $('#report_sub_county').show();
             $('#sub_county').attr('data-parsley-required', 'true');
             $('#sub_county').empty();
             $('#sub_county').multiselect('rebuild');
         }else if (res == '4'){
-            $('#report_cluster').hide();
-            $('#id_cluster').attr('data-parsley-required', 'false');
             $('#report_reg_unit').show();
             $('#id_org_unit').attr('data-parsley-required', 'true');
+
             $('#report_county').hide();
             $('#county').attr('data-parsley-required', 'false');
-            $('#report_sub_county').hide();
-            $('#sub_county').attr('data-parsley-required', 'false');
-        }else if (res == '5'){
-            $('#report_cluster').show();
-            $('#id_cluster').attr('data-parsley-required', 'true');
-            $('#report_reg_unit').hide();
-            $('#id_org_unit').attr('data-parsley-required', 'false');
-            $('#report_county').hide();
-            $('#county').attr('data-parsley-required', 'false');
+
             $('#report_sub_county').hide();
             $('#sub_county').attr('data-parsley-required', 'false');
         }
@@ -387,8 +344,7 @@ jQuery(document).ready(function() {
     M = new Array('January','February','March','April','May','June',
                   'July','August','September','October','November','December');
     Q = new Array('Qtr1','Qtr2','Qtr3','Qtr4');
-    S = new Array('PEPFAR');
-    Y = new Array('PEPFAR');
+    Y = new Array('Financial');
     O = new Array('Other');
 
     populateSelect();
@@ -427,6 +383,7 @@ jQuery(document).ready(function() {
     }
 
 });
+
 function PrintElem(elem)
     {
         Popup($(elem).html());
@@ -509,10 +466,12 @@ function printReport() {
       }
       var mapContainerParent = mapContainer.parent();
       var printContainer     = $('<div>');
-      var prnt = '<center><img src="{% static 'img/logo_private.png' %}" alt="" /></center>';
-      var rname = $("#id_report_type option:selected").text();
-      var ryear = $("#id_report_year option:selected").text();
-      var prnt = 'DATIM Report '+ rname + ' ' + ryear;
+      var prnt = '<center><img src="{% static 'img/gok_logo.jpg' %}" alt="" /></center>';
+      prnt += '<center><b>{{ dcs.MINISTRY }}<br>';
+      prnt += '{{ dcs.STATE_DEPT }}<br>';
+      prnt += '{{ dcs.NAME }}<br></b></center>';
+      var pdts = $('#pdates').text();
+      prnt += 'Case data for dates '+ pdts
       //$("#print_title").val();
 
       printContainer
