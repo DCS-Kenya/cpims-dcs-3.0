@@ -266,6 +266,9 @@ def get_general_list(field_names=[], item_category=False, is_void=False):
     '''
     try:
         queryset = SetupList.objects.all().order_by('the_order', 'id')
+        # To exclude voided records
+        if not is_void:
+            queryset = queryset.filter(is_void=False)
         if len(field_names) > 1:
             q_filter = Q()
             for field_name in field_names:
@@ -285,7 +288,7 @@ def get_general_list(field_names=[], item_category=False, is_void=False):
         return queryset
 
 
-def get_list(field_name=[], default_txt=False, category=False):
+def get_list(field_name=[], default_txt=False, category=False, is_void=False):
     my_list = ()
     try:
         cat_id = '1' if category else '0'
@@ -295,7 +298,7 @@ def get_list(field_name=[], default_txt=False, category=False):
             v_list = cache_list
             print('FROM Cache %s' % (cache_key))
         else:
-            v_list = get_general_list([field_name], category)
+            v_list = get_general_list([field_name], category, is_void=is_void)
             cache.set(cache_key, v_list, 300)
         my_list = v_list.values_list(
             'item_id', 'item_description').order_by('the_order')
@@ -386,7 +389,7 @@ def get_org_units_dict(default_txt=False):
         return all_list
 
 
-def get_dict(field_name=[], default_txt=False):
+def get_dict(field_name=[], default_txt=False, is_void=False):
     '''
     Push the item_id and item_description into a tuple
     Instead of sorting after, ordered dict works since query
@@ -397,7 +400,7 @@ def get_dict(field_name=[], default_txt=False):
     # [{'item_id': u'TNRS', 'item_description': u'Residentia....'}
     dict_val = {}
     try:
-        my_list = get_general_list(field_names=field_name)
+        my_list = get_general_list(field_names=field_name, is_void=is_void)
         all_list = my_list.values('item_id', 'item_description')
         for value in all_list:
             item_id = value['item_id']

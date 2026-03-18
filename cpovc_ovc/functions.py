@@ -775,9 +775,12 @@ def limit_person_ids_orgs(request, pids):
 def get_ovc_events(request, form_id, ovc_id):
     """ Method to get events based of form id."""
     try:
+        events = []
         # F1A - OVCCareServices
-        events = OVCCareServices.objects.filter(
-            event__person_id=ovc_id).order_by("-event__date_of_event")
+        if form_id == 1:
+            events = OVCCareServices.objects.filter(
+                event__person_id=ovc_id, event__event_type_id='FSAM',
+                event__is_void=False, is_void=False).order_by("-event__date_of_event")
         print('events', events)
         # F1B - OVCCareF1B
     except Exception as e:

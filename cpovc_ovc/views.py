@@ -860,9 +860,14 @@ def ovc_form_view(request, form_id, reg_id):
                         'class_level_id', 'eligibility_criteria_id',
                         'olmis_protection_service_id',
                         'olmis_education_service_id',
-                        'olmis_hes_service_id',
+                        'olmis_hes_service_id', 'exit_reason_id',
                         'olmis_health_service_id']
-        vals = get_dict(field_name=check_fields)
+        vals = get_dict(field_name=check_fields, is_void=True)
+        vals_new = {}
+        for vl in vals:
+            if vl.startswith("CP") and 'a' in vl:
+                vals_new[vl.replace('a', '')] = vals[vl]
+            vals_new[vl] = vals[vl]
         wellbeing_services = {}
         wellbeing_services['wba'] = services['wba']
         wellbeing_services['WBG'] = services['WBG']
@@ -879,7 +884,7 @@ def ovc_form_view(request, form_id, reg_id):
                       {'status': 200, 'child': child, 'params': params,
                        'child_hiv_status': child_hiv_status,
                        'guardians': guardians, 'siblings': siblings,
-                       'vals': vals, 'hhold': hhold, 'creg': creg,
+                       'vals': vals_new, 'hhold': hhold, 'creg': creg,
                        'extids': gparams, 'health': health,
                        'hhmembers': hhmembers, 'school': school,
                        'care_giver': care_giver, 'services': services,

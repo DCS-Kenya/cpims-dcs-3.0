@@ -65,7 +65,7 @@ Caregiver details | {{care_giver}}
 <div class="row">
    <!-- begin col-2 -->
     <div class="col-md-2">
-        <div class="m-b-10 text-inverse f-s-12"><b>Available Forms</b></div>
+        <h5>Available Forms</h5>
 
         <table class="text-inverse m-b-20 width-full">
             <tr>
@@ -161,7 +161,7 @@ Caregiver details | {{care_giver}}
                     <a href="{% url 'ovc_form_view' form_id=11 reg_id=reg_id %}">
                     <i class="fa fa-file-o fa-1x pull-left fa-fw m-t-4"></i>
                     <span class="badge pull-right">N</span>
-                    <div class="m-t-4">Referral Form</div></a>
+                    <div class="m-t-4">Referrals</div></a>
                 </td>
             </tr>
             <tr>
@@ -173,6 +173,14 @@ Caregiver details | {{care_giver}}
                 </td>
             </tr>
         </table>
+
+        <h5>Key Summary</h5>
+        <ul class="p-l-25 m-b-15">
+            <li>Period in Program : </li>
+        </ul>
+        <p class="m-b-20">
+            <a href="{% url 'ovc_prog_view' reg_id=reg_id %}" class="btn btn-inverse">View OVC</a>
+        </p>
 
         </div>
     <!-- begin col-10 -->
@@ -247,7 +255,7 @@ Caregiver details | {{care_giver}}
                         </tr>
                     </tbody>
                 </table>
-
+                <hr>
                 <fieldset>
                 <legend class="pull-left width-full">{{ form_name }} - Past events</legend>
                 <!-- begin row -->
